@@ -1,3 +1,92 @@
+import { gql, useQuery } from "@apollo/client";
 import React from "react";
+import { restaurantsPageQuery, restaurantsPageQueryVariables } from '../../__generated__/restaurantsPageQuery';
 
-export const Restaurants=()=> <h1>Restaurants</h1>;
+const RESTAURANTS_QUERY = gql`
+  query restaurantsPageQuery($input: RestaurantsInput!) {
+    allCategories {
+      ok
+      error
+      categories {
+        id
+        name
+        coverImg
+        slug
+        restaurantCount
+      }
+    }
+    restaurants(input: $input) {
+      ok
+      error
+      totalPages
+      totalResults
+      results {
+        id
+        name
+        coverImg
+        category {
+          name
+        }
+        address
+        isPromoted
+      }
+    }
+  }
+`;
+
+export const Restaurants=()=>{
+    const{data,loading,error}=useQuery<
+    restaurantsPageQuery,restaurantsPageQueryVariables
+    >(RESTAURANTS_QUERY,{
+        variables:{
+            input:{
+                page:1
+            }
+        }
+    });
+    console.log(data);
+    return(
+    
+    <div>
+        <form className="bg-gray-800 w-full py-40 flex items-center justify-center">
+            <input type="Search"
+             className="input rounded-md border-0 w-3/12" 
+             placeholder="Search Restaurants..."/>
+        </form>
+        {!loading && (
+        <div className="max-w-screen-2xl mx-auto mt-8">
+            <div className="flex justify-around max-w-sm mx-auto">
+                {data?.allCategories.categories?.map(category=>(
+                <div
+                className="flex flex-col group itmes-center cursor-pointer">
+                    <div
+                    className="w-16 h-16 bg-cover rounded-full group-hover:bg-gray-200" 
+                    style={{backgroundImage:`url(${category.coverImg})`}}>
+                    </div>
+                    <span className="text-sm text-center font-medium mt-1">
+                        {category.name}</span>
+                </div>
+                ))}
+        </div>
+            <div>
+                {data?.restaurants.results?.map((restaurant)=>(
+                    <div className="grid mt-10 grid-cols-3 gap-x-5 gap-y-10">
+                        <div
+                        style={{backgroundImage:`url(${restaurant.coverImg})`}} 
+                        className="bg-red-500 bg-cover bg-center mb-3 py-28">
+                            <h3 className="text-xl font-medium">
+                                {restaurant.name}
+                            </h3>
+                            <span className="border-t-2 border-gray-200">
+                                {restaurant.category?.name}
+                            </span>
+                        </div>
+                    </div>
+                ))
+                }
+            </div>
+    
+    </div>
+        )};   
+    </div>
+    )}

@@ -2,16 +2,15 @@ import React from "react";
 import { Button } from "../../components/button";
 import { useMe } from "../../hooks/useMe";
 import { useForm } from 'react-hook-form';
-import { gql, useMutation } from '@apollo/client';
+import { gql, useApolloClient, useMutation } from '@apollo/client';
 import { editProfile,editProfileVariables } from '../../__generated__/editProfile';
-import { client } from '../../apollo';
+import { Helmet } from "react-helmet-async";
 
 const EDIT_PROFILE_MUTATION=gql`
 mutation editProfile($input:EditProfileInput!){
     editProfile(input:$input){
         ok
         error
-        
     }
 }`
 
@@ -21,35 +20,41 @@ interface IFormProps{
 }
 
 export const EditProfile=()=>{
-    const onCompleted=(data:editProfile)=>{
-        const {editProfile:{error,ok}}=data;
+    
+    const {data:userData,refetch}=useMe();
+    const client = useApolloClient();
+    const onCompleted=async (data:editProfile)=>{
+        const {
+            editProfile:{ok},
+        }=data;
         if(ok && userData){
-            const {me:{email:prevEmail,id}}=userData;
-
-            const {email:newEmail}=getValues();
-            if(prevEmail!==newEmail){
-                client.writeFragment({
-                    id:`Ùser:${id}`,
-                    fragment:gql`
-                    fragment EditedUser on User{
-                        verified
-                        email
-                    }
-                    `,
-                    data:{
-                        email:newEmail,
-                        verified:false,
-                    },
-                })
-            }
+            await refetch();
+            // refetch 대용
+        //     const {me:{email:prevEmail,id}}=userData;
+        //    console.log(id);
+        //     const {email:newEmail}=getValues();
+        //     if(prevEmail!==newEmail){
+        //         client.writeFragment({
+        //             id:`Ùser:${id}`,
+        //             fragment:gql`
+        //             fragment EditedUser on User{
+        //                 verified
+        //                 email
+        //             }
+        //             `,
+        //             data:{
+        //                 email:newEmail,
+        //                 verified:false,
+        //             },
+        //         })
+        //     }
             //update the cache
         }
     }
-    const {data:userData}= useMe();
     const [editProfile,{loading}]=useMutation<
     editProfile,editProfileVariables>(EDIT_PROFILE_MUTATION,{
         onCompleted,
-    })
+    });
     const {register,handleSubmit,getValues,formState}=useForm<IFormProps>({
         mode:"onChange",
         defaultValues:{
@@ -63,13 +68,16 @@ export const EditProfile=()=>{
                 input:{
                     email,
                     ...(password!==""&&{password}),
-                }
-            }
+                },
+            },
         })
     }
     return (
 
     <div className="mt-52 flex flex-col justify-center items-center">
+        <Helmet>
+            <title>Edit Profile| Sub's Eats</title>
+        </Helmet>
         <h4 className="font-semibold text-2xl mb-3">Edit Profile</h4>
         <form 
             onSubmit={handleSubmit(onSubmit)}
@@ -83,7 +91,10 @@ export const EditProfile=()=>{
              className="input" type="email" placeholder="Email" required/>
             <input {...register("password",{})}
              className="input" type="password" placeholder="Password"/>
-            <Button loading={loading} canClick={!loading} actionText="Save Profile">Update Profile</Button>
+            <Button 
+            loading={loading} 
+            canClick={formState.isValid} 
+            actionText="Save Profile">Update Profile</Button>
         </form>
         </div>
         )

@@ -14,12 +14,12 @@ export const Header:React.FC=() => {
     return(
         <>
         {!data?.me.verified &&  
-        <div className="bg-red-500 p-3 text-center text-white text-sm">
+        <div className="bg-red-500 p-3 text-center text-white text-base">
             <span>Please verify your email</span>
         </div>}
             <header className="py-4">
                 <div className="w-full px-5 md:px-0 max-w-screen-2xl mx-auto flex justify-between items-center">
-                    <img src={mainlogo} className="w-24 mb-10" alt="Nuber eats"/>
+                    <img src={mainlogo} className="w-36 mb-10" alt="Nuber eats"/>
                     <span className="text-xs">
                         <Link to="/edit-profile/">
                             <FontAwesomeIcon icon={faUser} className="text-xl"/>
