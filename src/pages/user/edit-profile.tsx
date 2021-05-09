@@ -42,7 +42,7 @@ export const EditProfile=()=>{
         //                 email
         //             }
         //             `,
-        //             data:{
+        //             data:{–≠≠
         //                 email:newEmail,
         //                 verified:false,
         //             },
@@ -96,6 +96,6 @@ export const EditProfile=()=>{
             canClick={formState.isValid} 
             actionText="Save Profile">Update Profile</Button>
         </form>
-        </div>
+        </div> 
         )
 }

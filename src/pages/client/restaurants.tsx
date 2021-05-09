@@ -1,6 +1,11 @@
 import { gql, useQuery } from "@apollo/client";
-import React from "react";
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { Restaurant } from "../../components/restaurant";
 import { restaurantsPageQuery, restaurantsPageQueryVariables } from '../../__generated__/restaurantsPageQuery';
+import { Link, useHistory } from 'react-router-dom';
+import { Helmet } from "react-helmet-async";
+import { CATEGORY_FRAGMENT, RESTAURANT_FRAGMENT } from "../../fragments";
 
 const RESTAURANTS_QUERY = gql`
   query restaurantsPageQuery($input: RestaurantsInput!) {
@@ -8,11 +13,7 @@ const RESTAURANTS_QUERY = gql`
       ok
       error
       categories {
-        id
-        name
-        coverImg
-        slug
-        restaurantCount
+        ...CategoryParts
       }
     }
     restaurants(input: $input) {
@@ -21,72 +22,124 @@ const RESTAURANTS_QUERY = gql`
       totalPages
       totalResults
       results {
-        id
-        name
-        coverImg
-        category {
-          name
-        }
-        address
-        isPromoted
+        ...RestaurantParts
       }
     }
   }
+  ${RESTAURANT_FRAGMENT}
+  ${CATEGORY_FRAGMENT}
 `;
+interface IFormProps{
+  searchTerm:string;
+}
 
 export const Restaurants=()=>{
+  const [page,setPage]= useState(1);
     const{data,loading,error}=useQuery<
     restaurantsPageQuery,restaurantsPageQueryVariables
     >(RESTAURANTS_QUERY,{
         variables:{
             input:{
-                page:1
+                page,
             }
         }
     });
-    console.log(data);
+    const onNextPageClick=()=> setPage(current =>current+1);
+    const onPrevPageClick=()=> setPage(current=>current-1);
+    const {register,handleSubmit,getValues} = useForm<IFormProps>();
+    const history =useHistory();
+    const onSearchSubmit=()=>{
+      const {searchTerm} = getValues();
+      history.push({
+        pathname:"/search",
+        state:{
+          searchTerm
+        }
+        // search: `?term=${searchTerm}`
+      })
+    }
     return(
-    
     <div>
-        <form className="bg-gray-800 w-full py-40 flex items-center justify-center">
-            <input type="Search"
-             className="input rounded-md border-0 w-3/12" 
+      <Helmet>
+        <title>Home |Sub's Eats</title>
+      </Helmet>
+        <form onSubmit={handleSubmit(onSearchSubmit)} 
+        className="bg-gray-800 w-full py-40 flex items-center justify-center">
+            <input 
+            {...register("searchTerm",
+            {
+              required:{
+              value:true,
+              message:""
+              },
+              min:{
+                value:3,
+                message:""
+              }
+          }
+          )}
+            type="Search"
+             className="input rounded-md border-0 w-3/4 md:w-3/12" 
              placeholder="Search Restaurants..."/>
         </form>
         {!loading && (
-        <div className="max-w-screen-2xl mx-auto mt-8">
+        <div className="max-w-screen-2xl pb-20 mx-auto mt-8">
             <div className="flex justify-around max-w-sm mx-auto">
                 {data?.allCategories.categories?.map(category=>(
-                <div
-                className="flex flex-col group itmes-center cursor-pointer">
+                  <Link key={category.id} to={`/category/${category.slug}`}>
                     <div
-                    className="w-16 h-16 bg-cover rounded-full group-hover:bg-gray-200" 
-                    style={{backgroundImage:`url(${category.coverImg})`}}>
+                      key={category.id}
+                      className="flex flex-col group items-center cursor-pointer">
+                          <div
+                          className="w-16 h-16 bg-cover rounded-full group-hover:bg-gray-100" 
+                          style={{backgroundImage:`url(${category.coverImg})`}}>
+                          </div>
+                          <span className="mt-1 text-sm text-center font-medium ">
+                              {category.name}
+                          </span>
                     </div>
-                    <span className="text-sm text-center font-medium mt-1">
-                        {category.name}</span>
-                </div>
+                  </Link>
                 ))}
-        </div>
-            <div>
+          </div>
+            <div className="grid mt-16 md:grid-cols-3  gap-x-5 gap-y-10">
                 {data?.restaurants.results?.map((restaurant)=>(
-                    <div className="grid mt-10 grid-cols-3 gap-x-5 gap-y-10">
-                        <div
-                        style={{backgroundImage:`url(${restaurant.coverImg})`}} 
-                        className="bg-red-500 bg-cover bg-center mb-3 py-28">
-                            <h3 className="text-xl font-medium">
-                                {restaurant.name}
-                            </h3>
-                            <span className="border-t-2 border-gray-200">
-                                {restaurant.category?.name}
-                            </span>
-                        </div>
-                    </div>
-                ))
-                }
+                  <Restaurant 
+                  key={restaurant.id}
+                  id={restaurant.id+""}
+                  coverImg={restaurant.coverImg}
+                  name={restaurant.name}
+                  categoryName={restaurant.category?.name}/>
+                ))}
             </div>
-    
-    </div>
-        )};   
+            <div className="grid grid-cols-3 text-center max-w-md items-center mx-auto mt-10">
+              {page >1 ? (
+                 <button 
+                 onClick={onPrevPageClick}
+                 className="focus:outline-none font-meduium text-2xl">
+                   &larr;
+                 </button>
+              ) : (
+              <div>
+
+              </div>
+              )}
+              <span className="mx-5">
+                Page {page} of{data?.restaurants.totalPages}
+              </span>
+              {page !==data?.restaurants.totalPages? (
+                <button 
+                onClick={onNextPageClick}
+                className="focus:outline-none font-meduium text-2xl">
+                  &rarr;
+                </button>
+              ) : (
+                <div>
+
+                </div>
+              )           
+              }
+            </div>
+      </div>
+        )}
     </div>
     )}

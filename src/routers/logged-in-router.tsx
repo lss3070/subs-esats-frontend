@@ -7,18 +7,30 @@ import { useMe } from '../hooks/useMe';
 import { NotFound } from '../pages/404';
 import { ConfirmEmail } from '../pages/user/confirm-email';
 import { EditProfile } from '../pages/user/edit-profile';
+import { Search } from '../pages/client/search';
+import { Category } from '../pages/client/category';
+import { Restaurant } from '../pages/client/restaurant';
 
 
 const ClientRoutes=[
     <Route key={1} path="/" exact>
         <Restaurants/>
     </Route>,
-    <Route key={2} path="/confirm" exact>
+    <Route key={2} path="/confirm">
         <ConfirmEmail/>
     </Route>,
-    <Route key={3} path="/edit-profile" exact>
+    <Route key={3} path="/edit-profile">
         <EditProfile/>
     </Route>,
+    <Route key={4} path="/search">
+        <Search/>
+    </Route>,
+    <Route key={5} path="/category/:slug">
+        <Category/>
+    </Route>,
+    <Route key={6} path="/restaurants/:id">
+      <Restaurant/>
+  </Route>,
 ];
 
 
@@ -37,10 +49,9 @@ export const LoggedInRouter=()=>
            <Header/>
            <Switch>
                 {data.me.role==="Client" && ClientRoutes}
-                <Redirect to="/"/>
-                {/* <Route>
+                <Route>
                     <NotFound/>
-                </Route> */}
+                </Route>
            </Switch>
        </Router>
 

@@ -19,7 +19,9 @@ export const Header:React.FC=() => {
         </div>}
             <header className="py-4">
                 <div className="w-full px-5 md:px-0 max-w-screen-2xl mx-auto flex justify-between items-center">
-                    <img src={mainlogo} className="w-36 mb-10" alt="Nuber eats"/>
+                    <Link to="/">
+                        <img src={mainlogo} className="w-36 mb-10" alt="Nuber eats"/>
+                    </Link>
                     <span className="text-xs">
                         <Link to="/edit-profile/">
                             <FontAwesomeIcon icon={faUser} className="text-xl"/>
