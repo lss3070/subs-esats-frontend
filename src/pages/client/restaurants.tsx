@@ -107,7 +107,7 @@ export const Restaurants=()=>{
                   key={restaurant.id}
                   id={restaurant.id+""}
                   coverImg={restaurant.coverImg}
-                  name={restaurant.name}
+                  name={restaurant.name+""}
                   categoryName={restaurant.category?.name}/>
                 ))}
             </div>
