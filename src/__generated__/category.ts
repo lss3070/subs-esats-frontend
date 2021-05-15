@@ -17,7 +17,7 @@ export interface category_category_restaurants_category {
 export interface category_category_restaurants {
   __typename: "Restaurant";
   id: number;
-  name: string;
+  name: string | null;
   coverImg: string;
   category: category_category_restaurants_category | null;
   address: string;

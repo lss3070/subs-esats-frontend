@@ -14,14 +14,38 @@ export interface myRestaurant_myRestaurant_restaurant_category {
   name: string;
 }
 
+export interface myRestaurant_myRestaurant_restaurant_menu_options_choices {
+  __typename: "DishChoice";
+  name: string;
+  extra: number | null;
+}
+
+export interface myRestaurant_myRestaurant_restaurant_menu_options {
+  __typename: "DishOption";
+  name: string;
+  extra: number | null;
+  choices: myRestaurant_myRestaurant_restaurant_menu_options_choices[] | null;
+}
+
+export interface myRestaurant_myRestaurant_restaurant_menu {
+  __typename: "Dish";
+  id: number;
+  name: string;
+  price: number;
+  photo: string | null;
+  description: string;
+  options: myRestaurant_myRestaurant_restaurant_menu_options[] | null;
+}
+
 export interface myRestaurant_myRestaurant_restaurant {
   __typename: "Restaurant";
   id: number;
-  name: string;
+  name: string | null;
   coverImg: string;
   category: myRestaurant_myRestaurant_restaurant_category | null;
   address: string;
   isPromoted: boolean;
+  menu: myRestaurant_myRestaurant_restaurant_menu[] | null;
 }
 
 export interface myRestaurant_myRestaurant {

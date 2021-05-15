@@ -6,6 +6,7 @@ import { Restaurant } from "../../components/restaurant";
 import { RESTAURANT_FRAGMENT } from "../../fragments";
 import { myRestaurants } from '../../__generated__/myRestaurants';
 import { Restaurants } from '../client/restaurants';
+import { MyRestaurant } from './my-restaurant';
 
 export const MY_RESTAURANTS_QUERY =gql`
     query myRestaurants{

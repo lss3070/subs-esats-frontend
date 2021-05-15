@@ -15,7 +15,7 @@ export interface myRestaurants_myRestaurants_restaurants_category {
 export interface myRestaurants_myRestaurants_restaurants {
   __typename: "Restaurant";
   id: number;
-  name: string;
+  name: string | null;
   coverImg: string;
   category: myRestaurants_myRestaurants_restaurants_category | null;
   address: string;

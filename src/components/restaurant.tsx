@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 interface IRestaurantProgs{
     id:string;
     coverImg:string;
-    name:string;
+    name:string|null;
     categoryName?:string;
 }
 
