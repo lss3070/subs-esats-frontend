@@ -3,8 +3,18 @@ import { gql, useQuery } from "@apollo/client";
 import React from "react";
 import { Link, useParams } from "react-router-dom";
 import { Dish } from "../../components/dish";
-import {VictoryBar,VictoryChart,VictoryAxis,VictoryPie} from "victory";
-import { DISH_FRAGMENT, RESTAURANT_FRAGMENT } from "../../fragments";
+import {
+    VictoryBar,
+    VictoryChart,
+    VictoryAxis,
+    VictoryPie,
+    VictoryVoronoiContainer,
+    VictoryLine,
+    VictoryTheme,
+    VictoryLabel,
+    VictoryTooltip
+} from "victory";
+import { DISH_FRAGMENT, ORDERS_FRAGMENT, RESTAURANT_FRAGMENT } from "../../fragments";
 import { myRestaurant, myRestaurantVariables } from '../../__generated__/myRestaurant';
 
 export const MY_RESTAURANT_QUERY = gql`
@@ -14,14 +24,18 @@ export const MY_RESTAURANT_QUERY = gql`
         error
         restaurant{
             ...RestaurantParts
-        menu{
-            ...DishParts
-        }
+            menu{
+                ...DishParts
+            }
+            orders{
+                ...OrderParts
+            }
         }
     }
 }
 ${RESTAURANT_FRAGMENT}
 ${DISH_FRAGMENT}
+${ORDERS_FRAGMENT}
 `
 
 interface IParams{
@@ -46,6 +60,7 @@ export const MyRestaurant = () => {
             {x:4,y:2300},
             {x:5,y:6800},
         ]
+        console.log(data);
     return(
 
         <div>
@@ -75,18 +90,62 @@ export const MyRestaurant = () => {
             ):(
                 <div className="grid mt-16 md:grid-cols-3 gap-x-5 gap-y-10">
                     {data?.myRestaurant.restaurant?.menu?.map((dish)=>
-                    <Dish name={dish.name} description={dish.description}
+                    <Dish 
+                    name={dish.name} 
+                    description={dish.description}
                     price={dish.price}
+                    options={dish.options}
                     />
                     )}
                 </div>
             )}
             <div className="mt-20 ">
                 <h4 className="text-center text-2lg font-medium">Sales</h4>
-                <div className="max-w-sm w-full mx-auto">
-                    <VictoryPie
-                            data={chartDate}
+                <div className=" mt-10">
+                    <VictoryChart 
+                    theme={VictoryTheme.material}
+                    height={500}
+                    width={window.innerWidth}
+                    domainPadding={50}
+                    containerComponent={<VictoryVoronoiContainer/>}>
+                        <VictoryLine
+                            labels={({datum})=>`$${datum.y}`}
+                            labelComponent={
+                            <VictoryTooltip
+                                style={{fontSize:18}}
+                                renderInPortal dy={-20}/>}
+                            data={
+                             data?.myRestaurant.restaurant?.orders.map((order)=>({
+                                x:order.createdAt,
+                                y:order.total
+                             }))}
+                             interpolation="natural"
+                             style={{
+                                 data:{
+                                    
+                                    strokeWidth:5
+                                 }
+                             }}
                         />
+                        <VictoryAxis 
+                        style={{tickLabels:{fontSize:18,fill:"#407c0f"} as any}}
+                        dependentAxis
+                        tickFormat={tick=>`$${tick}`} label="Days"/>
+
+                        <VictoryAxis 
+                        tickLabelComponent={<VictoryLabel renderInPortal/>}
+                        style={
+                            {tickLabels:{
+                                fontSize:20,
+                                
+                            } as any
+                        }
+                        }
+                        tickFormat={tick=>new Date(tick).toLocaleDateString("ko")} label="Days"/>
+                    </VictoryChart>
+                    {/* <VictoryPie
+                            data={chartDate}
+                        /> */}
                     {/* <VictoryChart domainPadding={20}>
       
                     <VictoryAxis

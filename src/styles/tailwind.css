@@ -4,12 +4,21 @@
 .input{
     @apply focus:outline-none p-3 border-2 text-lg font-light border-gray-200 transition-colors;
 };
+.container{
+    @apply max-w-screen-2xl mx-auto;
+}
+.link{
+    @apply text-lime-400 hover:underline;
+}
 
 .btn{ @apply mt-3 
     text-lg 
     font-medium
-    text-white bg-green-700 py-4 
-    hover:bg-green-700 
+    focus:outline-none
+    text-white 
+    bg-lime-600 
+    py-4 
+    hover:bg-lime-700 
     transition-colors;
 }
 @tailwind utilities;
