@@ -32,13 +32,14 @@ export const Dish: React.FC<IDishProps> = ({
     addItemToOrder,
     removeFromOrder,
     addOptionToItem,
-    isSelected
+    isSelected,
+    children:dishOptions,
 }) => {
     const onClick=()=>{
 
             if(orderStarted){
                 if(!isSelected && addItemToOrder){
-                    addItemToOrder(id)
+                   return addItemToOrder(id)
                 }
                 if(isSelected && removeFromOrder){
                     return removeFromOrder(id)
@@ -46,31 +47,25 @@ export const Dish: React.FC<IDishProps> = ({
             }
     }
     return (
-        <div onClick={onClick} 
+        <div
             className = {`px-8 py-4 border curosr-pointer hover:border-gray-800 translation-allow 
             ${isSelected? "border-gray-800": "hover:border-gary-800"} `} 
             > 
             <div className = "mb-5" > 
-                <h3 className = "text-lg font-medium mb-5" > {name} {orderStarted&& <button>{isSelected?"Remove":"Add"}</button>}</h3> 
+                <h3 className = "text-lg font-medium mb-5" > {name}{" "} {orderStarted&& 
+                <button
+                className={`ml-3 py-1 px-3 focus:outline-none text-sm text-white ${
+                    isSelected?"bg-red-500":"bg-lime-600"}`}
+                onClick={onClick}>{isSelected?"Remove":"Add"}</button>}</h3> 
                 < h4 className = "font-medium" > {description}</h4>
             </div>
             <span> $ {price}</span> 
             {
             isCustomer && options &&  options?.length!==0 &&(
             <div> 
-                <h5 className="my-8 mb-3 font-medium">Dish Options</h5>
-                {
-                options
-                    ?.map((option, index) => (
-                    < span onClick={()=>
-                        addOptionToItem ?
-                        addOptionToItem(id,{name:option.name,extra:option.extra}):null
-                     }
-                      className="flex border itmes center" key = {index} > 
-                        <h6 className="mr-2">{option.name}</h6>
-                        <h6 className="text-sm opacity-75">[${option.extra}]</h6>
-                    </span>))
-            }</div>)
+                <h5 className="my-8 mb-3 font-medium">Dish Options:</h5>
+                <div className="grid gap-2 justify-start">{dishOptions}</div>
+            </div>)
         }</div>
     )
 }
