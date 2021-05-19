@@ -1,7 +1,7 @@
 
-import { gql, useQuery } from "@apollo/client";
-import React from "react";
-import { Link, useParams } from "react-router-dom";
+import { gql, useQuery, useSubscription } from "@apollo/client";
+import React, { useEffect } from "react";
+import { Link, useParams, useHistory } from 'react-router-dom';
 import { Dish } from "../../components/dish";
 import {
     VictoryBar,
@@ -14,8 +14,10 @@ import {
     VictoryLabel,
     VictoryTooltip
 } from "victory";
-import { DISH_FRAGMENT, ORDERS_FRAGMENT, RESTAURANT_FRAGMENT } from "../../fragments";
+import { DISH_FRAGMENT, FULL_ORDER_FRAGMENT, ORDERS_FRAGMENT, RESTAURANT_FRAGMENT } from "../../fragments";
 import { myRestaurant, myRestaurantVariables } from '../../__generated__/myRestaurant';
+import { Helmet } from "react-helmet";
+import { pendingOrders } from '../../__generated__/pendingOrders';
 
 export const MY_RESTAURANT_QUERY = gql`
  query myRestaurant($input:MyRestaurantInput!){
@@ -36,6 +38,15 @@ export const MY_RESTAURANT_QUERY = gql`
 ${RESTAURANT_FRAGMENT}
 ${DISH_FRAGMENT}
 ${ORDERS_FRAGMENT}
+`
+
+const PENDING_ORDERS_SUBSCRIPTION= gql`
+    subscription pendingOrders{
+        pendingOrders{
+            ...FullOrderParts
+        }
+    }    
+${FULL_ORDER_FRAGMENT}
 `
 
 interface IParams{
@@ -60,11 +71,22 @@ export const MyRestaurant = () => {
             {x:4,y:2300},
             {x:5,y:6800},
         ]
-        console.log(data);
+        const {data:subscriptionData}=useSubscription<pendingOrders>(PENDING_ORDERS_SUBSCRIPTION);
+        const history = useHistory();
+        useEffect(()=>{
+            if(subscriptionData?.pendingOrders.id){
+                history.push(`/orders/${subscriptionData.pendingOrders.id}`);
+            }
+        },[subscriptionData]);
     return(
 
         <div>
-            <h1>My restaurant</h1>
+            <Helmet>
+                <title>
+                    {data?.myRestaurant.restaurant?.name||"Loading..." } | Sub's Eats
+                   
+                </title>
+            </Helmet>
             <div className="bg-gray-700 py-28 bg-center bg-cover"
             style={{
                 backgroundImage: `url(${data?.myRestaurant.restaurant?.coverImg})`
