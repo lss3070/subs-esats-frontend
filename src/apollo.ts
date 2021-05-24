@@ -11,7 +11,7 @@ export const authToken = makeVar(token);
 
 
 const wsLink = new WebSocketLink({
-  uri:process.env.NODE_ENV==="production"?"ws://subs-eats-backend.herokuapp.com/graphql": `ws://localhost:4000/graphql`,
+  uri:process.env.NODE_ENV==="production"?"wss://subs-eats-backend.herokuapp.com/graphql": `ws://localhost:4000/graphql`,
   options:{
     reconnect:true,
     connectionParams:{
@@ -20,7 +20,7 @@ const wsLink = new WebSocketLink({
   }
 })
 const httpLink = createHttpLink({
-  uri:process.env.NODE_ENV==="production"?"http://subs-eats-backend.herokuapp.com/graphql":"http://localhost:4000/graphql"
+  uri:process.env.NODE_ENV==="production"?"https://subs-eats-backend.herokuapp.com/graphql":"http://localhost:4000/graphql"
 });
 
 const authLink= setContext((_, {headers})=>{
