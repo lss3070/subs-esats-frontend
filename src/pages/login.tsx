@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import { Button } from "../components/button";
 import { FormError } from "../components/form-error";
 import mainlogo from "../images/logo.svg"
-import { loginMutation, loginMutationVariables } from '../__generated__/loginMutation';
+import { loginMutation, loginMutationVariables } from "../__generated__/loginMutation";
 import { authToken, isLoggedInVar } from '../apollo';
 import { LOCALSTORAGE_TOKEN } from '../constants';
 
