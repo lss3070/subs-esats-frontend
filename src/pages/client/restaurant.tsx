@@ -11,8 +11,6 @@ import { DishOption } from '../../components/dish-option';
 import { createOrder, createOrderVariables } from '../../__generated__/createOrder';
 
 
-
-
 const RESTAURANT_QUERY =gql`
     query restaurant($input:RestaurantInput!){
         restaurant(input:$input){

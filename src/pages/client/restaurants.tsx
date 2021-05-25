@@ -6,6 +6,7 @@ import { restaurantsPageQuery, restaurantsPageQueryVariables } from '../../__gen
 import { Link, useHistory } from 'react-router-dom';
 import { Helmet } from "react-helmet-async";
 import { CATEGORY_FRAGMENT, RESTAURANT_FRAGMENT } from "../../fragments";
+import { SortForm } from "../../components/sort";
 
 const RESTAURANTS_QUERY = gql`
   query restaurantsPageQuery($input: RestaurantsInput!) {
@@ -73,7 +74,7 @@ export const Restaurants=()=>{
               message:""
               },
               min:{
-                value:3,
+                value:6,
                 message:""
               }
           }
@@ -89,7 +90,7 @@ export const Restaurants=()=>{
                   <Link key={category.id} to={`/category/${category.slug}`}>
                     <div
                       key={category.id}
-                      className="flex flex-col group items-center cursor-pointer">
+                      className="flex flex-col group items-center cursor-pointer ml-3">
                           <div
                           className="w-16 h-16 bg-cover rounded-full group-hover:bg-gray-100" 
                           style={{backgroundImage:`url(${category.coverImg})`}}>

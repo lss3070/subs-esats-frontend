@@ -1,6 +1,8 @@
 {
   "compilerOptions": {
-    "types":["googlemaps"],
+    "types": [
+      "googlemaps"
+    ],
     "target": "es5",
     "lib": [
       "dom",

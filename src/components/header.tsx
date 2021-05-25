@@ -1,7 +1,8 @@
-import { faUser } from "@fortawesome/free-solid-svg-icons";
+import { faUser,faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
+import { LOCALSTORAGE_TOKEN } from "../constants";
 import { useMe } from "../hooks/useMe";
 import mainlogo from "../images/logo.svg"
 
@@ -11,6 +12,12 @@ interface IHeaderProps {
 
 export const Header:React.FC=() => {
     const {data}= useMe();
+    const history = useHistory();
+
+    const Logout=()=>{
+        localStorage.removeItem(LOCALSTORAGE_TOKEN);
+        window.location.href = '/'; 
+     }
     return(
         <>
         {!data?.me.verified &&  
@@ -24,8 +31,11 @@ export const Header:React.FC=() => {
                     </Link>
                     <span className="text-xs">
                         <Link to="/edit-profile/">
-                            <FontAwesomeIcon icon={faUser} className="text-xl"/>
+                            <FontAwesomeIcon icon={faUser} className="text-xl mr-2"/>
                         </Link>
+                        <span onClick={Logout} className="text-xl cursor-pointer">
+                            <FontAwesomeIcon icon={faSignOutAlt} className="text-xl"></FontAwesomeIcon>
+                        </span>
                     </span>
                 </div>
             </header>

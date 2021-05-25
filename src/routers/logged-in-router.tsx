@@ -19,30 +19,30 @@ import { DashBoard } from '../pages/driver/dashboard';
 import { UserRole } from '../__generated__/globalTypes';
 
 
-// const ClientRoutes=[
-//     <Route key={1} path="/" exact>
-//         <Restaurants/>
-//     </Route>,
-//     <Route key={2} path="/confirm">
-//         <ConfirmEmail/>
-//     </Route>,
-//     <Route key={3} path="/edit-profile">
-//         <EditProfile/>
-//     </Route>,
-//     <Route key={4} path="/search">
-//         <Search/>
-//     </Route>,
-//     <Route key={5} path="/category/:slug">
-//         <Category/>
-//     </Route>,
-//     <Route key={6} path="/restaurants/:id">
-//       <Restaurant/>
-//   </Route>,
-// ];
+const customeRoutes=[
+    {
+        path:'/',
+        component:<Restaurants/>
+    },
+    {
+        path:"/search",
+        component:<Search/>
+    },{
+        path:"/category/:slug",
+        component:<Category/>
+    },{
+        path:"/restaurants/:id",
+        component:<Restaurant/>
+    }
+];
 
 const clientRoutes=[
     {
         path:"/coverage",
+        component:<Restaurants/>
+    },
+    {
+        path:"/",
         component:<Restaurants/>
     },
     {
@@ -99,6 +99,11 @@ export const LoggedInRouter=()=>
        <Router>
            <Header/>
            <Switch>
+               {data.me.role===UserRole.Customer && customeRoutes.map(route=>
+                <Route exact key={route.path} path={route.path}>
+                    {route.component}
+                </Route>
+                )}
                 {data.me.role===UserRole.Client && clientRoutes.map(route=>
                 <Route exact key={route.path} path={route.path}>
                     {route.component}
