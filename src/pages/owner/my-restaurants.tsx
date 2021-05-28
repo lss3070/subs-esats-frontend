@@ -38,17 +38,23 @@ export const MyRestaurants =()=>{
                         Create one &rarr;
                     </Link>
                 </>
-                ):       
-                <div className="grid mt-16 md:grid-cols-3  gap-x-5 gap-y-10">
-                {data?.myRestaurants.restaurants?.map((restaurant)=>(
-                  <Restaurant 
-                  key={restaurant.id}
-                  id={restaurant.id+""}
-                  coverImg={restaurant.coverImg}
-                  name={restaurant.name}
-                  categoryName={restaurant.category?.name}/>
-                ))}
-            </div>
+                ):
+                <>
+                    <Link
+                    className="text-lime-600 hover:underline" to="/add-restaurant">
+                        Create one &rarr;
+                    </Link>
+                    <div className="grid mt-16 md:grid-cols-3  gap-x-5 gap-y-10">
+                        {data?.myRestaurants.restaurants?.map((restaurant)=>(
+                        <Restaurant 
+                        key={restaurant.id}
+                        id={restaurant.id+""}
+                        coverImg={restaurant.coverImg}
+                        name={restaurant.name}
+                        categoryName={restaurant.category?.name}/>
+                        ))}
+                    </div>
+                </>
                 }
             </div>
         </div>

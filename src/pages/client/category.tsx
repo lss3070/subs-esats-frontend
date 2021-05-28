@@ -7,6 +7,8 @@ import { useLocation, useParams } from "react-router-dom";
 import { Restaurant } from "../../components/restaurant";
 import { CATEGORY_FRAGMENT, RESTAURANT_FRAGMENT } from "../../fragments";
 import { category, categoryVariables } from '../../__generated__/category';
+import { restaurant } from '../../__generated__/restaurant';
+import { NotMatch } from "../notmatch";
 
 
 const CATEGORY_QUERY = gql`
@@ -48,7 +50,12 @@ export const Category =()=>{
     // const onPrevPageClick=()=> setPage(current=>current-1);
 
     return(
+     
         <div>
+          {data?.category.restaurants&& data?.category.restaurants?.length===0?
+          (<NotMatch matchName={params.slug}/>):
+          (
+            <div>
         <Helmet>
           <title>Category |Sub's Eats</title>
         </Helmet>
@@ -63,9 +70,6 @@ export const Category =()=>{
                     name={restaurant.name+""}
                     categoryName={restaurant.category?.name}/>
                   ))}
-              </div>
-              <div>
-                  <span>Show more...</span>
               </div>
               {/* <div className="grid grid-cols-3 text-center max-w-md items-center mx-auto mt-10">
                 {page >1 ? (
@@ -97,6 +101,9 @@ export const Category =()=>{
               </div> */}
         </div>
           )}
+            </div>
+          )}
+
       </div>
     )
 }

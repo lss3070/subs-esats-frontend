@@ -111,6 +111,12 @@ export const AddRestaurant =()=>{
         }catch(error){
 
         }
+    }
+    const [optionsNumber, setOptionsNumber] = useState<number[]>([])
+    const onAddDivisionOptionClick=()=>{
+
+    }
+    const onDelDivisionOptionClick=(id:number)=>{
 
     }
     return (
@@ -119,7 +125,7 @@ export const AddRestaurant =()=>{
                 <title>AddRestaurant | Sub's Eats</title>
             </Helmet>
             <h1>AddRestaurant</h1>
-            <form onSubmit={handleSubmit(onSubmit)}>
+            <form className="grid max-w-screen-sm gap-3 mt-5 w-full mb-5" onSubmit={handleSubmit(onSubmit)}>
                 <input {...register("name",{
                     required:{
                         value:true,
@@ -150,7 +156,49 @@ export const AddRestaurant =()=>{
                 type="text"
                 placeholder="Category Name"
                 />
+               <div className="my-10">
+                    <h4 className="font-medium mb-3 text-lg">Division Options</h4>
+                    <span
+                    onClick={onAddDivisionOptionClick}
+                    className="cursor-pointer text-white bg-gray-900 py-1 px-2 mt-5 bg-">
+                        Add Dish Option
+                    </span>
+                    {optionsNumber.length !== 0 &&
+                          optionsNumber.map((id) => (
+                        <div key={id} className="mt-5">
+                            <input 
+                            {...register(`${id}-optionName`,{
+
+                            })}
+                            className="py-2 px-4 mr-3 focus:outline-none focus:border-gray-600 border-2" 
+                            type="text" 
+                            placeholder="Option Name"
+                            />
+                            
+                            <input 
+                            {...register(`${id}-optionExtra`,{
+
+                            })}
+                            className="py-2 px-4 focus:outline-none focus:border-gray-600 border-2" 
+                            type="nubmer" 
+                            min={0}
+                            defaultValue={0}
+                            placeholder="Option extra"
+                            />
+                            <span 
+                            className="cursor-pointer 
+                            bg-red-500 
+                            ml-3 
+                            text-white 
+                            py-3 px-4 mt-5 bg-"
+                            onClick={()=>onDelDivisionOptionClick(id)} role="button">Delete button</span>
+                    </div>
+                    ))}
+                </div>
+
+
                 <div>
+                    <span>Banner Image</span>
                     <input type="file" accept="image/" {...register("file",{
                         required:{
                             value:true,

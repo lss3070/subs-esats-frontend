@@ -9,6 +9,8 @@ import { useLocation, useHistory } from 'react-router-dom';
 import { Restaurant } from "../../components/restaurant";
 import { RESTAURANT_FRAGMENT } from "../../fragments";
 import { searchRestaurant, searchRestaurantVariables } from '../../__generated__/searchRestaurant';
+import { restaurant } from '../../__generated__/restaurant';
+import { NotMatch } from "../notmatch";
 
 interface ILocation{
         searchTerm:string;
@@ -61,13 +63,18 @@ export const Search = ()=>{
           state:{
             searchTerm
           }
-          // search: `?term=${searchTerm}`
         })
       }
       
     return(
         <div>
-        <Helmet>
+          {data?.searchRestaurant?.restaurants&&
+          data?.searchRestaurant?.restaurants?.length===0?(
+          <div>
+            <NotMatch matchName={location.state.searchTerm}/>
+          </div>):
+          (<div>
+          <Helmet>
           <title>Category |Sub's Eats</title>
         </Helmet>
         <form onSubmit={handleSubmit(onSearchSubmit)} 
@@ -101,12 +108,10 @@ export const Search = ()=>{
                     categoryName={restaurant.category?.name}/>
                   ))}
               </div>
-              <div>
-                  <span>Show more...</span>
-              </div>
-              
         </div>
           )}
+          </div>)}
+
       </div>
     )
 }
