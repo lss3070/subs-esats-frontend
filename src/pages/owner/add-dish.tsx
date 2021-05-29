@@ -139,7 +139,6 @@ export const AddDish = ()=>{
                         <div key={id} className="mt-5">
                             <input 
                             {...register(`${id}-optionName`,{
-
                             })}
                             className="py-2 px-4 mr-3 focus:outline-none focus:border-gray-600 border-2" 
                             type="text" 

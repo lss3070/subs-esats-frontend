@@ -8,7 +8,8 @@ import { Helmet } from "react-helmet";
 import { FormError } from "../../components/form-error";
 import { MY_RESTAURANTS_QUERY } from "./my-restaurants";
 import { useHistory } from 'react-router-dom';
-
+import { AddressSearch } from "../../components/addressSearch";
+import { Modal } from "../modal";
 
 const CREATE_ACCOUNT_MUTATION =gql`
     mutation createRestaurant($input:CreateRestaurantInput!){
@@ -20,18 +21,22 @@ const CREATE_ACCOUNT_MUTATION =gql`
     }
 `
 interface IFormProps{
-    name?: string;
-    coverImg?:string;
+    name: string;
+    coverImg:string;
     address:string;
+    detailAddress:string;
     categoryName:string;
-    file:FileList;
+    // file:FileList;
+    file:string;
+    [key: string]: string;
 }
-
 
 export const AddRestaurant =()=>{
     const client = useApolloClient();
     const [imageUrl,setImageUrl]= useState("");
     const history = useHistory();
+    const [addressOpen,setAddressOpen]= useState(false);
+
     const onCompleted = (data:createRestaurant)=>{
         const{createRestaurant:{ok, restaurantId}}=data
         if(ok){
@@ -78,11 +83,15 @@ export const AddRestaurant =()=>{
         register,
         getValues,
         formState,
-        handleSubmit
+        handleSubmit,
+        setValue
     } = useForm<IFormProps>({
         mode:"onChange"
     });
     const [uploading,setUploading] = useState(false);
+  
+
+
     const onSubmit= async()=>{
         try{
             setUploading(true);
@@ -112,12 +121,20 @@ export const AddRestaurant =()=>{
 
         }
     }
+
+
+    const openAddress = ()=>{
+        setAddressOpen(true);
+    }
+
     const [optionsNumber, setOptionsNumber] = useState<number[]>([])
     const onAddDivisionOptionClick=()=>{
-
+        setOptionsNumber((current)=> [Date.now(), ...current]);
     }
-    const onDelDivisionOptionClick=(id:number)=>{
-
+    const onDelDivisionOptionClick=(idToDelete:number)=>{
+        setOptionsNumber(current=>current.filter((id)=>id!==idToDelete));
+        //
+        setValue(`${idToDelete}-menuDivision`,"")
     }
     return (
         <div className="container flex flex-col items-center mt-52">
@@ -136,7 +153,21 @@ export const AddRestaurant =()=>{
                 type="text"
                 placeholder="Name"
                 />
+               <div className="w-full">
                 <input {...register("address",{
+                        required:{
+                            value:true,
+                            message:"Address is required."
+                        }
+                    })}
+                    className="input w-3/4"
+                    type="text"
+                    placeholder="Address"
+                    />
+                    <span onClick={openAddress} className="btn cursor-pointer w-1/4">Search</span>
+               </div>
+                
+                <input {...register("detailAddress",{
                     required:{
                         value:true,
                         message:"Address is required."
@@ -144,7 +175,7 @@ export const AddRestaurant =()=>{
                 })}
                 className="input"
                 type="text"
-                placeholder="Address"
+                placeholder="DetailAddress"
                 />
                 <input {...register("categoryName",{
                     required:{
@@ -157,34 +188,19 @@ export const AddRestaurant =()=>{
                 placeholder="Category Name"
                 />
                <div className="my-10">
-                    <h4 className="font-medium mb-3 text-lg">Division Options</h4>
+                    <h4 className="font-medium mb-3 text-lg">Menu Division Options</h4>
                     <span
                     onClick={onAddDivisionOptionClick}
                     className="cursor-pointer text-white bg-gray-900 py-1 px-2 mt-5 bg-">
-                        Add Dish Option
+                        Add Menu Division Options
                     </span>
                     {optionsNumber.length !== 0 &&
                           optionsNumber.map((id) => (
                         <div key={id} className="mt-5">
-                            <input 
-                            {...register(`${id}-optionName`,{
-
-                            })}
-                            className="py-2 px-4 mr-3 focus:outline-none focus:border-gray-600 border-2" 
-                            type="text" 
-                            placeholder="Option Name"
-                            />
-                            
-                            <input 
-                            {...register(`${id}-optionExtra`,{
-
-                            })}
-                            className="py-2 px-4 focus:outline-none focus:border-gray-600 border-2" 
-                            type="nubmer" 
-                            min={0}
-                            defaultValue={0}
-                            placeholder="Option extra"
-                            />
+                             <input 
+                             className="input"
+                            {...register(`${id}-menuDivision`,{
+                            })}/>
                             <span 
                             className="cursor-pointer 
                             bg-red-500 
@@ -195,8 +211,6 @@ export const AddRestaurant =()=>{
                     </div>
                     ))}
                 </div>
-
-
                 <div>
                     <span>Banner Image</span>
                     <input type="file" accept="image/" {...register("file",{
@@ -213,6 +227,8 @@ export const AddRestaurant =()=>{
                />
             </form>
             {data?.createRestaurant.error && <FormError errorMessage={data.createRestaurant.error}/>}
+            <Modal><AddressSearch/></Modal>
+            <div>{addressOpen&&<AddressSearch/>}</div>
         </div>
     )
 }
