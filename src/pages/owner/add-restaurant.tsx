@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { gql, useMutation, useApolloClient } from '@apollo/client';
+import { gql, useMutation, useApolloClient, useQuery } from '@apollo/client';
 
 import {createRestaurant,createRestaurantVariables} from "../../__generated__/createRestaurant"
 import { useForm } from "react-hook-form";
@@ -10,6 +10,10 @@ import { MY_RESTAURANTS_QUERY } from "./my-restaurants";
 import { useHistory } from 'react-router-dom';
 import { AddressSearch } from "../../components/addressSearch";
 import { Modal } from "../modal";
+import { allCategory } from "../../__generated__/allCategory";
+import { Autocomplete, AutocompleteProps } from '@material-ui/lab'
+import {TextField} from '@material-ui/core'
+import { category } from '../../__generated__/category';
 
 const CREATE_ACCOUNT_MUTATION =gql`
     mutation createRestaurant($input:CreateRestaurantInput!){
@@ -20,6 +24,20 @@ const CREATE_ACCOUNT_MUTATION =gql`
         }
     }
 `
+const ALL_CATEGORY_QUERY = gql`
+    query allCategory{
+        allCategories{
+            ok
+            error
+            categories{
+                id
+                slug
+            }
+        }
+    }
+`
+
+
 interface IFormProps{
     name: string;
     coverImg:string;
@@ -29,6 +47,11 @@ interface IFormProps{
     // file:FileList;
     file:string;
     [key: string]: string;
+}
+
+interface IAutoCompleteProps{
+    id:number;
+    slug:string;
 }
 
 export const AddRestaurant =()=>{
@@ -77,8 +100,7 @@ export const AddRestaurant =()=>{
         onCompleted,
         // refetchQueries:[{query:MY_RESTAURANTS_QUERY}]
     })
-
-
+    
     const {
         register,
         getValues,
@@ -89,7 +111,10 @@ export const AddRestaurant =()=>{
         mode:"onChange"
     });
     const [uploading,setUploading] = useState(false);
-  
+    const [zipCode, setZipCode] = useState<string>();
+    const [address, setAddress] = useState("");
+
+    const categories = useQuery<allCategory>(ALL_CATEGORY_QUERY);
 
 
     const onSubmit= async()=>{
@@ -124,8 +149,17 @@ export const AddRestaurant =()=>{
 
 
     const openAddress = ()=>{
+       
         setAddressOpen(true);
     }
+    const closeAddress=()=>{
+        setAddressOpen(false);
+    }
+    const addAddress =(zipCode:string,address:string)=>{
+        setZipCode(zipCode);
+        setAddress(address);
+    }
+
 
     const [optionsNumber, setOptionsNumber] = useState<number[]>([])
     const onAddDivisionOptionClick=()=>{
@@ -136,6 +170,10 @@ export const AddRestaurant =()=>{
         //
         setValue(`${idToDelete}-menuDivision`,"")
     }
+    const renderInput=(params: IAutoCompleteProps)=>{
+
+    }
+
     return (
         <div className="container flex flex-col items-center mt-52">
             <Helmet>
@@ -154,6 +192,17 @@ export const AddRestaurant =()=>{
                 placeholder="Name"
                 />
                <div className="w-full">
+               <input {...register("zipCode",{
+                        required:{
+                            value:true,
+                            message:"zipCode is required."
+                        }
+                    })}
+                    className="input w-3/4"
+                    type="text"
+                    placeholder="ZipCode"
+                    value={zipCode}
+                    />
                 <input {...register("address",{
                         required:{
                             value:true,
@@ -163,8 +212,13 @@ export const AddRestaurant =()=>{
                     className="input w-3/4"
                     type="text"
                     placeholder="Address"
+                    value={address}
                     />
                     <span onClick={openAddress} className="btn cursor-pointer w-1/4">Search</span>
+
+                    {addressOpen&&(
+                        <Modal><AddressSearch onclose={closeAddress} addAddress={addAddress}/></Modal>
+                    )}
                </div>
                 
                 <input {...register("detailAddress",{
@@ -177,7 +231,23 @@ export const AddRestaurant =()=>{
                 type="text"
                 placeholder="DetailAddress"
                 />
-                <input {...register("categoryName",{
+                {
+                    categories.data?.allCategories.ok&&
+                    <Autocomplete 
+                    options={categories.data?.allCategories.categories!}
+                    getOptionLabel={(option) => option.slug}
+                    renderInput={(params)=>
+                        <TextField {...register("categoryName",{
+                            required:{
+                                value:true,
+                                message:"Categories is requried."
+                            }
+                        })}
+                        label="Category Name"
+                        {...params} variant="outlined"></TextField>
+                    }/>
+                }
+                {/* <input {...register("categoryName",{
                     required:{
                         value:true,
                         message:"Categories is requried."
@@ -186,7 +256,7 @@ export const AddRestaurant =()=>{
                 className="input"
                 type="text"
                 placeholder="Category Name"
-                />
+                /> */}
                <div className="my-10">
                     <h4 className="font-medium mb-3 text-lg">Menu Division Options</h4>
                     <span
@@ -227,8 +297,8 @@ export const AddRestaurant =()=>{
                />
             </form>
             {data?.createRestaurant.error && <FormError errorMessage={data.createRestaurant.error}/>}
-            <Modal><AddressSearch/></Modal>
-            <div>{addressOpen&&<AddressSearch/>}</div>
+           
+          
         </div>
     )
 }

@@ -21,4 +21,31 @@
     hover:bg-lime-700 
     transition-colors;
 }
+.modal-wrap{
+    @apply 
+    top-0
+    left-0
+    fixed
+    z-999
+    w-full
+    h-full
+    grid
+    justify-center
+    align-middle
+}
+
+.modal-content{@apply
+    bg-white
+    p-4
+    max-w-lg
+    h-auto
+}
+.modal-header{
+    @apply
+    bg-white
+    p-4
+    max-w-lg
+    h-auto
+}
+
 @tailwind utilities;
