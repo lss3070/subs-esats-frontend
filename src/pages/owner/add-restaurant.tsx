@@ -13,7 +13,6 @@ import { Modal } from "../modal";
 import { allCategory } from "../../__generated__/allCategory";
 import { Autocomplete, AutocompleteProps } from '@material-ui/lab'
 import {TextField} from '@material-ui/core'
-import { category } from '../../__generated__/category';
 
 const CREATE_ACCOUNT_MUTATION =gql`
     mutation createRestaurant($input:CreateRestaurantInput!){
@@ -32,12 +31,11 @@ const ALL_CATEGORY_QUERY = gql`
             categories{
                 id
                 slug
+                name
             }
         }
     }
 `
-
-
 interface IFormProps{
     name: string;
     coverImg:string;
@@ -120,7 +118,12 @@ export const AddRestaurant =()=>{
     const onSubmit= async()=>{
         try{
             setUploading(true);
-            const {file,name,categoryName,address}=getValues();
+            const {file,name,categoryName,detailAddress,description,...rest}=getValues();
+
+            const divisionsObjects= divisionsNumber.map((theId)=>({
+                name: rest[`${theId}-menuDivision`],
+            }))
+
             const actualFile=file[0];
             const formbody = new FormData();
             formbody.append("file",actualFile);
@@ -137,13 +140,17 @@ export const AddRestaurant =()=>{
                         name:name+"",
                         categoryName,
                         address,
-                        coverImg
+                        coverImg,
+                        detailAddress,
+                        zipCode:+zipCode!,
+                        description,
+                        divisions:divisionsObjects
                     }
                 }
             })
             setUploading(false);
         }catch(error){
-
+            console.log(error)
         }
     }
 
@@ -161,12 +168,13 @@ export const AddRestaurant =()=>{
     }
 
 
-    const [optionsNumber, setOptionsNumber] = useState<number[]>([])
+    const [divisionsNumber, setDivisionsNumber] = useState<number[]>([])
     const onAddDivisionOptionClick=()=>{
-        setOptionsNumber((current)=> [Date.now(), ...current]);
+        setDivisionsNumber((current)=> [Date.now(), ...current]);
     }
     const onDelDivisionOptionClick=(idToDelete:number)=>{
-        setOptionsNumber(current=>current.filter((id)=>id!==idToDelete));
+
+        setDivisionsNumber(current=>current.filter((id)=>id!==idToDelete));
         //
         setValue(`${idToDelete}-menuDivision`,"")
     }
@@ -192,27 +200,17 @@ export const AddRestaurant =()=>{
                 placeholder="Name"
                 />
                <div className="w-full">
-               <input {...register("zipCode",{
-                        required:{
-                            value:true,
-                            message:"zipCode is required."
-                        }
-                    })}
+               <input {...register("zipCode")}
                     className="input w-3/4"
                     type="text"
                     placeholder="ZipCode"
-                    value={zipCode}
+                    defaultValue={zipCode}
                     />
-                <input {...register("address",{
-                        required:{
-                            value:true,
-                            message:"Address is required."
-                        }
-                    })}
+                <input {...register("address")}
                     className="input w-3/4"
                     type="text"
                     placeholder="Address"
-                    value={address}
+                    defaultValue={address}
                     />
                     <span onClick={openAddress} className="btn cursor-pointer w-1/4">Search</span>
 
@@ -235,7 +233,7 @@ export const AddRestaurant =()=>{
                     categories.data?.allCategories.ok&&
                     <Autocomplete 
                     options={categories.data?.allCategories.categories!}
-                    getOptionLabel={(option) => option.slug}
+                    getOptionLabel={(option) => option.name}
                     renderInput={(params)=>
                         <TextField {...register("categoryName",{
                             required:{
@@ -247,16 +245,11 @@ export const AddRestaurant =()=>{
                         {...params} variant="outlined"></TextField>
                     }/>
                 }
-                {/* <input {...register("categoryName",{
-                    required:{
-                        value:true,
-                        message:"Categories is requried."
-                    }
-                })}
+                <input {...register("description")}
                 className="input"
                 type="text"
-                placeholder="Category Name"
-                /> */}
+                placeholder="description"
+                /> 
                <div className="my-10">
                     <h4 className="font-medium mb-3 text-lg">Menu Division Options</h4>
                     <span
@@ -264,8 +257,8 @@ export const AddRestaurant =()=>{
                     className="cursor-pointer text-white bg-gray-900 py-1 px-2 mt-5 bg-">
                         Add Menu Division Options
                     </span>
-                    {optionsNumber.length !== 0 &&
-                          optionsNumber.map((id) => (
+                    {divisionsNumber.length !== 0 &&
+                          divisionsNumber.map((id) => (
                         <div key={id} className="mt-5">
                              <input 
                              className="input"
@@ -292,13 +285,11 @@ export const AddRestaurant =()=>{
                 </div>
                <Button
                loading={loading} 
-               canClick={formState.isValid} 
+               canClick={formState.isValid}
                actionText="Create Restaurant"
                />
             </form>
             {data?.createRestaurant.error && <FormError errorMessage={data.createRestaurant.error}/>}
-           
-          
         </div>
     )
 }

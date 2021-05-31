@@ -54,7 +54,11 @@ export interface CreateOrderItemInput {
 export interface CreateRestaurantInput {
   name?: string | null;
   coverImg: string;
+  zipCode?: number | null;
   address: string;
+  detailAddress?: string | null;
+  description?: string | null;
+  divisions: DivisionInputType[];
   categoryName: string;
 }
 
@@ -67,6 +71,10 @@ export interface DishOptionInputType {
   name: string;
   choices?: DishChoiceInputType[] | null;
   extra?: number | null;
+}
+
+export interface DivisionInputType {
+  name: string;
 }
 
 export interface EditOrderInput {

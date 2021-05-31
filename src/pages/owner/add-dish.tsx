@@ -53,8 +53,7 @@ export const AddDish = ()=>{
       });
       const onSubmit=()=>{
         const {name,price,description,...rest}= getValues();
-        console.log(optionsNumber);
-        console.log(rest);
+
         const optionsObjects= optionsNumber.map((theId)=>({
             name: rest[`${theId}-optionName`],
             extra:+rest[`${theId}-optionExtra`]

@@ -11,6 +11,7 @@ export interface allCategory_allCategories_categories {
   __typename: "Category";
   id: number;
   slug: string;
+  name: string;
 }
 
 export interface allCategory_allCategories {
