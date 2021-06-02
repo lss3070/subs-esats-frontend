@@ -14,6 +14,11 @@ export interface searchRestaurant_searchRestaurant_restaurants_category {
   name: string;
 }
 
+export interface searchRestaurant_searchRestaurant_restaurants_divisions {
+  __typename: "RestaurantDivision";
+  name: string;
+}
+
 export interface searchRestaurant_searchRestaurant_restaurants {
   __typename: "Restaurant";
   id: number;
@@ -22,6 +27,7 @@ export interface searchRestaurant_searchRestaurant_restaurants {
   category: searchRestaurant_searchRestaurant_restaurants_category | null;
   address: string;
   isPromoted: boolean;
+  divisions: searchRestaurant_searchRestaurant_restaurants_divisions[];
 }
 
 export interface searchRestaurant_searchRestaurant {

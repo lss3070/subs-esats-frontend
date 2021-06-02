@@ -1,4 +1,4 @@
-import { gql, useMutation } from '@apollo/client';
+import { gql, useMutation, useQuery } from '@apollo/client';
 import React, { useState } from "react";
 import { Helmet } from 'react-helmet';
 import { useForm } from 'react-hook-form';
@@ -6,6 +6,12 @@ import { useHistory, useParams } from "react-router-dom";
 import { Button } from '../../components/button';
 import { createDish, createDishVariables } from '../../__generated__/createDish';
 import { MY_RESTAURANT_QUERY } from './my-restaurant';
+import { Autocomplete } from '@material-ui/lab';
+import { RESTAURANT_FRAGMENT } from '../../fragments';
+import { RESTAURANT_QUERY } from '../client/restaurant';
+import { restaurant, restaurantVariables } from '../../__generated__/restaurant';
+import {TextField} from '@material-ui/core'
+import Chip from '@material-ui/core/Chip';
 
 
 const CREATE_DISH_MUTATION =gql`
@@ -27,6 +33,9 @@ interface IForm {
     description: string;
     [key: string]: string;
   }
+interface IDivisions{
+    name:string
+}
 
 
 
@@ -34,6 +43,14 @@ export const AddDish = ()=>{
     const {restaurantId}= useParams<IParams>();
     const history = useHistory();
     const params =useParams<{restaurantId:string}>()
+    const restaurantQuery =useQuery<restaurant,restaurantVariables>(RESTAURANT_QUERY,{
+        variables:{
+            input:{
+                restaurantId:+restaurantId
+            }
+        }
+    });
+    
     const [createDishMutation,{loading}]=useMutation<createDish,createDishVariables>(CREATE_DISH_MUTATION,{
         refetchQueries:[{query:MY_RESTAURANT_QUERY,variables:{
             input:{
@@ -42,6 +59,8 @@ export const AddDish = ()=>{
         }}]
     });
 
+    const fixedDivisions: IDivisions[] =[]
+    const [divisionValue,setDivisionValue]= useState<IDivisions[]>([...fixedDivisions])
     const {
         register,
         handleSubmit,
@@ -58,7 +77,13 @@ export const AddDish = ()=>{
             name: rest[`${theId}-optionName`],
             extra:+rest[`${theId}-optionExtra`]
         }))
+        const divisionObjects = divisionValue.map((division)=>({
+            name:division.name
+        }))
+
+        const divsions = divisionValue;
         console.log(optionsObjects)
+        console.log(divsions)
         createDishMutation({
             variables:{
                 input:{
@@ -66,10 +91,12 @@ export const AddDish = ()=>{
                     price:+price,
                     description,
                     restaurantId:+restaurantId,
-                    options:optionsObjects
+                    options:optionsObjects,
+                    divisions:divisionObjects
                 }
             }
         })
+
         history.goBack();
       };
       const [optionsNumber, setOptionsNumber] = useState<number[]>([])
@@ -126,6 +153,36 @@ export const AddDish = ()=>{
                         }
                     })}
                 />
+                {
+                    restaurantQuery.data?.restaurant.restaurant?.divisions&&
+                    <Autocomplete
+                    multiple
+                    value ={divisionValue}
+                    onChange={(event, newValue) => {
+                        setDivisionValue([
+                          ...fixedDivisions,
+                          ...newValue.filter((option) => fixedDivisions.indexOf(option) === -1),
+                        ]);
+                      }}
+
+                    options={restaurantQuery.data?.restaurant.restaurant?.divisions}
+                    getOptionLabel={(option) => option.name}
+                    renderTags={(tagValue, getTagProps) =>
+                        tagValue.map((option, index) => (
+                          <Chip
+                            label={option.name}
+                            {...getTagProps({ index })}
+                            disabled={fixedDivisions.indexOf(option) !== -1}
+                          />
+                        ))
+                      }
+
+                    renderInput={(params)=>
+                        <TextField {...register("diVisions")}
+                        label="Division Name"
+                        {...params} variant="outlined"></TextField>
+                    }/>
+                }
                 <div className="my-10">
                     <h4 className="font-medium mb-3 text-lg">Dish Options</h4>
                     <span

@@ -10,6 +10,18 @@ import { gql } from "@apollo/client";
 //         totalResults
 //     }
 // `
+export const MYRESTAURANT_FRAGMENT= gql`
+fragment MyRestaurantParts on Restaurant{
+  id
+  name
+  coverImg
+  category{
+    name
+  }
+  address
+  isPromoted
+}
+`;
 
 export const RESTAURANT_FRAGMENT = gql`
     fragment RestaurantParts on Restaurant{
@@ -21,6 +33,9 @@ export const RESTAURANT_FRAGMENT = gql`
       }
       address
       isPromoted
+      divisions{
+        name
+      }
     }
 `;
 
@@ -48,7 +63,9 @@ export const DISH_FRAGMENT= gql`
         name
         extra
       }
-
+    }
+    divisions{
+      name
     }
   }
 `

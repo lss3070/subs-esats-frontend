@@ -14,7 +14,7 @@ import {
     VictoryLabel,
     VictoryTooltip
 } from "victory";
-import { DISH_FRAGMENT, FULL_ORDER_FRAGMENT, ORDERS_FRAGMENT, RESTAURANT_FRAGMENT } from "../../fragments";
+import { DISH_FRAGMENT, FULL_ORDER_FRAGMENT, MYRESTAURANT_FRAGMENT, ORDERS_FRAGMENT, RESTAURANT_FRAGMENT } from "../../fragments";
 import { myRestaurant, myRestaurantVariables } from '../../__generated__/myRestaurant';
 import { Helmet } from "react-helmet";
 import { pendingOrders } from '../../__generated__/pendingOrders';
@@ -25,7 +25,7 @@ export const MY_RESTAURANT_QUERY = gql`
         ok
         error
         restaurant{
-            ...RestaurantParts
+            ...MyRestaurantParts
             menu{
                 ...DishParts
             }
@@ -35,7 +35,7 @@ export const MY_RESTAURANT_QUERY = gql`
         }
     }
 }
-${RESTAURANT_FRAGMENT}
+${MYRESTAURANT_FRAGMENT}
 ${DISH_FRAGMENT}
 ${ORDERS_FRAGMENT}
 `

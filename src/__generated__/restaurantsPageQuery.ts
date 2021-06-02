@@ -30,6 +30,11 @@ export interface restaurantsPageQuery_restaurants_results_category {
   name: string;
 }
 
+export interface restaurantsPageQuery_restaurants_results_divisions {
+  __typename: "RestaurantDivision";
+  name: string;
+}
+
 export interface restaurantsPageQuery_restaurants_results {
   __typename: "Restaurant";
   id: number;
@@ -38,6 +43,7 @@ export interface restaurantsPageQuery_restaurants_results {
   category: restaurantsPageQuery_restaurants_results_category | null;
   address: string;
   isPromoted: boolean;
+  divisions: restaurantsPageQuery_restaurants_results_divisions[];
 }
 
 export interface restaurantsPageQuery_restaurants {

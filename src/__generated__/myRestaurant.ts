@@ -27,6 +27,11 @@ export interface myRestaurant_myRestaurant_restaurant_menu_options {
   choices: myRestaurant_myRestaurant_restaurant_menu_options_choices[] | null;
 }
 
+export interface myRestaurant_myRestaurant_restaurant_menu_divisions {
+  __typename: "DishDivision";
+  name: string;
+}
+
 export interface myRestaurant_myRestaurant_restaurant_menu {
   __typename: "Dish";
   id: number;
@@ -35,6 +40,7 @@ export interface myRestaurant_myRestaurant_restaurant_menu {
   photo: string | null;
   description: string;
   options: myRestaurant_myRestaurant_restaurant_menu_options[] | null;
+  divisions: myRestaurant_myRestaurant_restaurant_menu_divisions[] | null;
 }
 
 export interface myRestaurant_myRestaurant_restaurant_orders {

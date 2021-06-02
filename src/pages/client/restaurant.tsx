@@ -11,7 +11,7 @@ import { DishOption } from '../../components/dish-option';
 import { createOrder, createOrderVariables } from '../../__generated__/createOrder';
 
 
-const RESTAURANT_QUERY =gql`
+export const RESTAURANT_QUERY =gql`
     query restaurant($input:RestaurantInput!){
         restaurant(input:$input){
             ok
@@ -194,6 +194,7 @@ export const Restaurant =()=>{
                 
                 <div className="w-full grid mt-16 md:grid-cols-3 gap-x-5 gap-y-10">
                {data?.restaurant.restaurant?.menu.map((dish,index) => (
+                
                     <Dish
                     isSelected={isSelected(dish.id)}
                     id={dish.id}

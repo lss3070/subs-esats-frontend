@@ -14,6 +14,11 @@ export interface category_category_restaurants_category {
   name: string;
 }
 
+export interface category_category_restaurants_divisions {
+  __typename: "RestaurantDivision";
+  name: string;
+}
+
 export interface category_category_restaurants {
   __typename: "Restaurant";
   id: number;
@@ -22,6 +27,7 @@ export interface category_category_restaurants {
   category: category_category_restaurants_category | null;
   address: string;
   isPromoted: boolean;
+  divisions: category_category_restaurants_divisions[];
 }
 
 export interface category_category_category {

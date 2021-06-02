@@ -39,6 +39,7 @@ export interface CreateDishInput {
   description: string;
   options?: DishOptionInputType[] | null;
   restaurantId: number;
+  divisions?: DishDivisionChoiceInputType[] | null;
 }
 
 export interface CreateOrderInput {
@@ -65,6 +66,10 @@ export interface CreateRestaurantInput {
 export interface DishChoiceInputType {
   name: string;
   extra?: number | null;
+}
+
+export interface DishDivisionChoiceInputType {
+  name: string;
 }
 
 export interface DishOptionInputType {

@@ -20,6 +20,11 @@ export interface DishParts_options {
   choices: DishParts_options_choices[] | null;
 }
 
+export interface DishParts_divisions {
+  __typename: "DishDivision";
+  name: string;
+}
+
 export interface DishParts {
   __typename: "Dish";
   id: number;
@@ -28,4 +33,5 @@ export interface DishParts {
   photo: string | null;
   description: string;
   options: DishParts_options[] | null;
+  divisions: DishParts_divisions[] | null;
 }

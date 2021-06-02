@@ -3,7 +3,7 @@ import React from "react";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import { Restaurant } from "../../components/restaurant";
-import { RESTAURANT_FRAGMENT } from "../../fragments";
+import { MYRESTAURANT_FRAGMENT, } from "../../fragments";
 import { myRestaurants } from '../../__generated__/myRestaurants';
 
 export const MY_RESTAURANTS_QUERY =gql`
@@ -12,16 +12,16 @@ export const MY_RESTAURANTS_QUERY =gql`
             ok
             error
             restaurants{
-                ...RestaurantParts
+                ...MyRestaurantParts
             }
         }
     }
-    ${RESTAURANT_FRAGMENT}
+    ${MYRESTAURANT_FRAGMENT}
 `
 
 export const MyRestaurants =()=>{
     const {data}= useQuery<myRestaurants>(MY_RESTAURANTS_QUERY);
-
+    console.log(data);
     return (
         <div>
             <Helmet>

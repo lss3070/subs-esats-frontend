@@ -4,26 +4,20 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL fragment: RestaurantParts
+// GraphQL fragment: MyRestaurantParts
 // ====================================================
 
-export interface RestaurantParts_category {
+export interface MyRestaurantParts_category {
   __typename: "Category";
   name: string;
 }
 
-export interface RestaurantParts_divisions {
-  __typename: "RestaurantDivision";
-  name: string;
-}
-
-export interface RestaurantParts {
+export interface MyRestaurantParts {
   __typename: "Restaurant";
   id: number;
   name: string | null;
   coverImg: string;
-  category: RestaurantParts_category | null;
+  category: MyRestaurantParts_category | null;
   address: string;
   isPromoted: boolean;
-  divisions: RestaurantParts_divisions[];
 }
