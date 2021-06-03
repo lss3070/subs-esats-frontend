@@ -43,6 +43,7 @@ export const AddressSearch:React.FC<IAddressProps>=({onclose,addAddress})=>{
       <div  className="modal-content">
         <DaumPostcode onComplete={addressComplete}/>
       </div>
-    </div>)
+    </div>
+    )
 }
    

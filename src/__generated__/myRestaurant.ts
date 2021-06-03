@@ -14,6 +14,11 @@ export interface myRestaurant_myRestaurant_restaurant_category {
   name: string;
 }
 
+export interface myRestaurant_myRestaurant_restaurant_divisions {
+  __typename: "RestaurantDivision";
+  name: string;
+}
+
 export interface myRestaurant_myRestaurant_restaurant_menu_options_choices {
   __typename: "DishChoice";
   name: string;
@@ -58,6 +63,7 @@ export interface myRestaurant_myRestaurant_restaurant {
   category: myRestaurant_myRestaurant_restaurant_category | null;
   address: string;
   isPromoted: boolean;
+  divisions: myRestaurant_myRestaurant_restaurant_divisions[] | null;
   menu: myRestaurant_myRestaurant_restaurant_menu[];
   orders: myRestaurant_myRestaurant_restaurant_orders[];
 }

@@ -1,6 +1,6 @@
 
 import { gql, useQuery, useSubscription } from "@apollo/client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useParams, useHistory } from 'react-router-dom';
 import { Dish } from "../../components/dish";
 import {
@@ -18,6 +18,7 @@ import { DISH_FRAGMENT, FULL_ORDER_FRAGMENT, MYRESTAURANT_FRAGMENT, ORDERS_FRAGM
 import { myRestaurant, myRestaurantVariables } from '../../__generated__/myRestaurant';
 import { Helmet } from "react-helmet";
 import { pendingOrders } from '../../__generated__/pendingOrders';
+import { DivisionInputType } from '../../__generated__/globalTypes';
 
 export const MY_RESTAURANT_QUERY = gql`
  query myRestaurant($input:MyRestaurantInput!){
@@ -25,7 +26,7 @@ export const MY_RESTAURANT_QUERY = gql`
         ok
         error
         restaurant{
-            ...MyRestaurantParts
+            ...RestaurantParts
             menu{
                 ...DishParts
             }
@@ -35,7 +36,7 @@ export const MY_RESTAURANT_QUERY = gql`
         }
     }
 }
-${MYRESTAURANT_FRAGMENT}
+${RESTAURANT_FRAGMENT}
 ${DISH_FRAGMENT}
 ${ORDERS_FRAGMENT}
 `
@@ -54,6 +55,7 @@ interface IParams{
 }
 
 export const MyRestaurant = () => {
+    const [divsionslist,setDivisionsList] = useState<DivisionInputType[]>([])
     const {id} =useParams<IParams>();
     const {data} =useQuery<myRestaurant,myRestaurantVariables>(
         MY_RESTAURANT_QUERY,
@@ -110,7 +112,10 @@ export const MyRestaurant = () => {
                     Please upload a dish
                 </h4>
             ):(
+                
                 <div className="grid mt-16 md:grid-cols-3 gap-x-5 gap-y-10">
+        
+                    
                     {data?.myRestaurant.restaurant?.menu?.map((dish)=>
                     <Dish 
                     name={dish.name} 

@@ -59,7 +59,7 @@ export interface CreateRestaurantInput {
   address: string;
   detailAddress?: string | null;
   description?: string | null;
-  divisions: DivisionInputType[];
+  divisions?: DivisionInputType[] | null;
   categoryName: string;
 }
 

@@ -6,7 +6,7 @@ import { useParams, useHistory } from 'react-router-dom';
 import { Dish } from "../../components/dish";
 import { DISH_FRAGMENT, RESTAURANT_FRAGMENT } from "../../fragments";
 import { restaurant, restaurantVariables } from "../../__generated__/restaurant";
-import { CreateOrderItemInput } from '../../__generated__/globalTypes';
+import { CreateOrderItemInput, DivisionInputType } from '../../__generated__/globalTypes';
 import { DishOption } from '../../components/dish-option';
 import { createOrder, createOrderVariables } from '../../__generated__/createOrder';
 
@@ -193,8 +193,11 @@ export const Restaurant =()=>{
                 )}
                 
                 <div className="w-full grid mt-16 md:grid-cols-3 gap-x-5 gap-y-10">
-               {data?.restaurant.restaurant?.menu.map((dish,index) => (
-                
+               
+               {data?.restaurant.restaurant?.menu.map((dish,index) => {
+                   
+                   return (
+                       
                     <Dish
                     isSelected={isSelected(dish.id)}
                     id={dish.id}
@@ -221,7 +224,10 @@ export const Restaurant =()=>{
                             />
                     ))}
                     </Dish>
-                     ))}
+                     )
+                    }
+                     
+                     )}
                </div>
             </div>
         </div>

@@ -33,6 +33,16 @@
     justify-center
     align-middle
 }
+.modal-cart{
+    @apply
+    fixed
+    z-999
+    w-full
+    h-full
+    grid
+    align-middle
+
+}
 
 .modal-content{@apply
     bg-white

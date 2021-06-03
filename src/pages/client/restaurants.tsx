@@ -83,6 +83,7 @@ export const Restaurants=()=>{
              className="input rounded-md border-0 w-3/4 md:w-3/12" 
              placeholder="Search Restaurants..."/>
         </form>
+        
         {!loading && (
         <div className="max-w-screen-2xl pb-20 mx-auto mt-8">
             <div className="flex justify-around max-w-sm mx-auto">

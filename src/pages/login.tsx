@@ -83,7 +83,7 @@ export const Login=()=>{
                     message:"Email Required",
                 },
                 pattern: {
-                   value: /^[A-Za-z0-9._%+-]+@hanmail.net$/,
+                   value: /^[A-Za-z0-9._%+-]+@(?:hanmail.net|gmail.com)$/,
                    message:"invalid email address"
                 },
             })}
