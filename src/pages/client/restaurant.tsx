@@ -9,6 +9,7 @@ import { restaurant, restaurantVariables } from "../../__generated__/restaurant"
 import { CreateOrderItemInput, DivisionInputType } from '../../__generated__/globalTypes';
 import { DishOption } from '../../components/dish-option';
 import { createOrder, createOrderVariables } from '../../__generated__/createOrder';
+import { useCartsDispatch } from '../../context/CartsContext';
 
 
 export const RESTAURANT_QUERY =gql`
@@ -27,7 +28,6 @@ export const RESTAURANT_QUERY =gql`
     ${RESTAURANT_FRAGMENT}
     ${DISH_FRAGMENT}
 `
-
 const CREATE_ORDER_MUTATION=gql`
     mutation createOrder($input:CreateOrderInput!){
         createOrder(input:$input){
@@ -55,6 +55,8 @@ export const Restaurant =()=>{
    
     const [orderStarted,setOrderStarted]= useState(false);
     const [orderItems,setOrderItems]=useState<CreateOrderItemInput[]>([])
+    const dispatch = useCartsDispatch()
+
     const triggerStartOrder=()=>{
         setOrderStarted(true);
     }
