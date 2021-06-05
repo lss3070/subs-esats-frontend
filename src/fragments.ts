@@ -59,6 +59,7 @@ export const DISH_FRAGMENT= gql`
     options{
       name
       extra
+      require
       choices{
         name
         extra

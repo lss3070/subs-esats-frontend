@@ -9,7 +9,9 @@ import { restaurant, restaurantVariables } from "../../__generated__/restaurant"
 import { CreateOrderItemInput, DivisionInputType } from '../../__generated__/globalTypes';
 import { DishOption } from '../../components/dish-option';
 import { createOrder, createOrderVariables } from '../../__generated__/createOrder';
-import { useCartsDispatch } from '../../context/CartsContext';
+import { ICartProps, useCartsDispatch } from '../../context/CartsContext';
+import { DishModal, ICartModalProps } from '../../components/dishModal';
+import { DishParts } from '../../__generated__/DishParts';
 
 
 export const RESTAURANT_QUERY =gql`
@@ -54,8 +56,39 @@ export const Restaurant =()=>{
 
    
     const [orderStarted,setOrderStarted]= useState(false);
+    const [openDishModal,setOpenDishModal]= useState(false);
+    const [dishModalValue,setDishModalValue]= useState<ICartModalProps>();
     const [orderItems,setOrderItems]=useState<CreateOrderItemInput[]>([])
     const dispatch = useCartsDispatch()
+
+    const dishModalOpen =(dish:DishParts)=>{
+        const options= dish.options?.map((option)=>{
+            let choices= option.choices?.map((choice)=>{
+                return{ 
+                    name: choice.name,
+                    extra: choice.extra
+                }
+            })
+            return{
+                name: option.name,
+                extra: option.extra,
+                require:option.require,
+                choices: choices
+            }
+        })
+        let dishvalue:ICartModalProps ={
+            id:dish.id,
+            name:dish.name,
+            count:1,
+            price:dish.price,
+            options:options
+        }
+        setDishModalValue(dishvalue);
+        setOpenDishModal(true);
+    }
+    const dishModalClose=()=>{
+        setOpenDishModal(false)
+    }
 
     const triggerStartOrder=()=>{
         setOrderStarted(true);
@@ -72,7 +105,6 @@ export const Restaurant =()=>{
         }
         setOrderItems((current)=>[{dishId,options:[]},...current])
     }
-    console.log(orderItems);
     const removeFromOrder = (dishId:number)=>{
         setOrderItems((current)=> current.filter(dish=>dish.dishId!==dishId));
     }
@@ -213,6 +245,8 @@ export const Restaurant =()=>{
                      addItemToOrder={addItemToOrder}
                      removeFromOrder={removeFromOrder}
                      addOptionToItem={addOptionToItem}
+                     dishModalOpen={dishModalOpen}
+                     dishValue={dish}
                     >
                         {dish.options?.map((option, index) => (
                             <DishOption
@@ -228,10 +262,12 @@ export const Restaurant =()=>{
                     </Dish>
                      )
                     }
-                     
                      )}
                </div>
+               {openDishModal&&<DishModal onclose={dishModalClose} 
+                     addDish={dishModalValue!}></DishModal>}
             </div>
         </div>
     )
+    
 }

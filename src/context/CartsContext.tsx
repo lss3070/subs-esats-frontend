@@ -2,19 +2,34 @@ import React, {createContext, Dispatch, useContext, useReducer} from "react"
 import { DishParts } from '../__generated__/DishParts';
 import { Dish } from '../components/dish';
 
+// export interface ICartProps{
+//     id:number;
+//     name:string;
+//     count:number;
+//     price:number;
+//     options:{
+//         name:string;
+//         extra:number|null;
+//         require:boolean;
+//         choices:{
+//             name:string;
+//             extra:number|null;
+//         }[] |undefined
+//     }[] |undefined
+// }
 export interface ICartProps{
-    id:number;
+    dishId:number;
     name:string;
     count:number;
     price:number;
-    options:[{
+    options:{
         name:string;
-        extra:number;
-        choices:[{
+        extra:number|undefined;
+        choices:{
             name:string;
-            extra:number;
-        }]
-    }]
+            extra:number|undefined;
+        }|undefined
+    }[]
 }
 
 type Cart ={
@@ -22,7 +37,7 @@ type Cart ={
 }
 type CartState= Cart[]
 type Action=
-| { type: 'CREATE'; cart: Cart }
+| { type: 'CREATE'; cart: ICartProps }
 | { type: 'TOGGLE'; id: number }
 | { type: 'REMOVE'; id: number };
 
@@ -36,29 +51,36 @@ const CartsDispatchContext = createContext<CartsDispatch|undefined>(
 
 function cartsReducer(state:CartState,action:Action):CartState{
 
+    switch(action.type){
+        case'CREATE':
+        state.push({
+            dish:action.cart
+        })
+    }
+    console.log(state);
     //임시...
-        return state;
+    return state;
 }
 
 export function CartContextProvider({children}:{children:React.ReactNode}){
     const initialState :Cart={
         dish:{
-            id:0,
+            dishId:0,
             count:0,
             name: "",
             price: 0,
             options: [{
                 name: "",
                 extra: 0,
-                choices: [{
+                choices: {
                     name: "e",
                     extra: 0,
-                }]
+                }
             }],
         }
     }
  
-    const [carts,dispatch] = useReducer(cartsReducer,[initialState]);
+    const [carts,dispatch] = useReducer(cartsReducer,[]);
 
     return (
         <CartsDispatchContext.Provider value={dispatch}>

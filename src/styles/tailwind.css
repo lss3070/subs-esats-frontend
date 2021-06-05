@@ -35,12 +35,12 @@
 }
 .modal-cart{
     @apply
+    
     fixed
     z-999
-    w-full
     h-full
     grid
-    align-middle
+    w-2/6
 
 }
 

@@ -76,6 +76,7 @@ export interface DishOptionInputType {
   name: string;
   choices?: DishChoiceInputType[] | null;
   extra?: number | null;
+  require?: boolean | null;
 }
 
 export interface DivisionInputType {
