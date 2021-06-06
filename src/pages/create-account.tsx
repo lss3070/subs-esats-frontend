@@ -1,5 +1,5 @@
 import { gql, useMutation } from "@apollo/client";
-import React from "react";
+import React, { useState } from "react";
 import { Helmet } from "react-helmet";
 import { useForm } from "react-hook-form";
 import { Link, useHistory } from "react-router-dom";
@@ -8,6 +8,8 @@ import { FormError } from "../components/form-error";
 import mainlogo from "../images/logo.svg"
 import { UserRole } from "../__generated__/globalTypes";
 import { createAccountMutation, createAccountMutationVariables } from '../__generated__/createAccountMutation';
+import { Modal } from "./modal";
+import { AddressSearch } from "../components/addressSearch";
 
  
 const CREATE_ACCOUNT_MUTATION = gql`
@@ -22,6 +24,10 @@ interface ICreateAccountForm{
 email:string;
 password:string;
 role:UserRole;
+zipCode:number;
+address:string;
+detailAddress:string;
+
 }
 export const CreateAccount=()=>{
 const {
@@ -35,6 +41,23 @@ const {
             role:UserRole.Client
         }
     });
+
+    const [zipCode, setZipCode] = useState<string>();
+    const [address, setAddress] = useState("");
+    const [addressOpen,setAddressOpen]= useState(false);
+    
+
+    const openAddress = ()=>{
+       
+        setAddressOpen(true);
+    }
+    const closeAddress=()=>{
+        setAddressOpen(false);
+    }
+    const addAddress =(zipCode:string,address:string)=>{
+        setZipCode(zipCode);
+        setAddress(address);
+    }
 
 const history = useHistory()
 const onCompleted =(data: createAccountMutation)=>{
@@ -56,10 +79,13 @@ const [createAccountMutation,
 
     const onSubmit=()=>{
         if(!loading){
-            const {email,password,role}=getValues();
+            const {email,password,role,detailAddress}=getValues();
+            
             createAccountMutation({
                 variables:{
-                    createAccountInput:{email,password,role}
+                    createAccountInput:{email,password,role,
+                        zipCode:+zipCode!,
+                        address:address,detailAddress}
                 }
             })
         }
@@ -120,6 +146,36 @@ return (
         {/* {errors.password?.type==="minLength" && (
             <FormError errorMessage="Password must be more than 10 chars."/>
         )} */}
+
+            <div className="w-full">
+               <input {...register("zipCode")}
+                    className="input w-3/4"
+                    type="text"
+                    placeholder="ZipCode"
+                    defaultValue={zipCode}
+                    />
+                <input {...register("address")}
+                    className="input w-3/4"
+                    type="text"
+                    placeholder="Address"
+                    defaultValue={address}
+                    />
+                    <span onClick={openAddress} className="btn cursor-pointer w-1/4">Search</span>
+
+                    {addressOpen&&(
+                        <Modal><AddressSearch onclose={closeAddress} addAddress={addAddress}/></Modal>
+                    )}
+               </div>
+               <input {...register("detailAddress",{
+                    required:{
+                        value:true,
+                        message:"Address is required."
+                    }
+                })}
+                className="input"
+                type="text"
+                placeholder="DetailAddress"
+                />
         <select {...register("role",{
             required:{
                 value:true,

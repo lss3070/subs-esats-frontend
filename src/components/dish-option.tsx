@@ -7,8 +7,8 @@ interface IDishOptionProps{
     name:string;
     extra:number|null;
     dishId:number;
-    addOptionToItem:(dishId:number,optionName:string)=>void;
-    removeOptionFromItem:(dishId:number,optionName:string)=>void;
+    // addOptionToItem:(dishId:number,optionName:string)=>void;
+    // removeOptionFromItem:(dishId:number,optionName:string)=>void;
 }
 
 export const DishOption:React.FC<IDishOptionProps>=({
@@ -16,15 +16,15 @@ export const DishOption:React.FC<IDishOptionProps>=({
     name,
     extra,
     dishId,
-    addOptionToItem,
-    removeOptionFromItem,
+    // addOptionToItem,
+    // removeOptionFromItem,
     })=>{
     const onClick=()=>{
-        if(isSelected){
-            removeOptionFromItem(dishId,name);
-        }else{
-            addOptionToItem(dishId,name)
-        }
+        // if(isSelected){
+        //     removeOptionFromItem(dishId,name);
+        // }else{
+        //     addOptionToItem(dishId,name)
+        // }
       
     }
     return(

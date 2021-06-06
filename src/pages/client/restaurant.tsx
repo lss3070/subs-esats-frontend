@@ -30,15 +30,15 @@ export const RESTAURANT_QUERY =gql`
     ${RESTAURANT_FRAGMENT}
     ${DISH_FRAGMENT}
 `
-const CREATE_ORDER_MUTATION=gql`
-    mutation createOrder($input:CreateOrderInput!){
-        createOrder(input:$input){
-            ok
-            error
-            orderId
-        }
-    }
-`
+// const CREATE_ORDER_MUTATION=gql`
+//     mutation createOrder($input:CreateOrderInput!){
+//         createOrder(input:$input){
+//             ok
+//             error
+//             orderId
+//         }
+//     }
+// `
 
 interface IRestaurantPramas{
     id:string;
@@ -77,6 +77,7 @@ export const Restaurant =()=>{
             }
         })
         let dishvalue:ICartModalProps ={
+            restaurantId:+params.id,
             id:dish.id,
             name:dish.name,
             count:1,
@@ -99,50 +100,50 @@ export const Restaurant =()=>{
     const isSelected = (dishId:number)=> {
         return Boolean(getItem(dishId))
     }
-    const addItemToOrder =(dishId:number) =>{
-        if(isSelected(dishId)){
-            return;
-        }
-        setOrderItems((current)=>[{dishId,options:[]},...current])
-    }
+    // const addItemToOrder =(dishId:number) =>{
+    //     if(isSelected(dishId)){
+    //         return;
+    //     }
+    //     setOrderItems((current)=>[{dishId,options:[]},...current])
+    // }
     const removeFromOrder = (dishId:number)=>{
         setOrderItems((current)=> current.filter(dish=>dish.dishId!==dishId));
     }
-    const addOptionToItem =(dishId:number,optionName:string)=>{
-        if(!isSelected(dishId)){
-            return
-        }
-        const oldItem= getItem(dishId);
+    // const addOptionToItem =(dishId:number,optionName:string)=>{
+    //     if(!isSelected(dishId)){
+    //         return
+    //     }
+    //     const oldItem= getItem(dishId);
         
-        if(oldItem){
-            const hasOption = Boolean(
-                oldItem.options?.find((aOption)=>aOption.name == optionName)
-            );
-            if(!hasOption){
-                removeFromOrder(dishId);
-                setOrderItems((current)=>[
-                    {dishId,options:[{name:optionName}, ...oldItem.options!]},
-                    ...current,
-                ]);
-                console.log(orderItems);
-            }
-        }
-    }
-    const removeOptionFromItem=(dishId:number,optionName:string)=>{
-        if(!isSelected(dishId)){
-            return;
-        }
-        const oldItem=getItem(dishId);
-        if(oldItem){
-            removeFromOrder(dishId);
-            setOrderItems((current)=>[
-                {dishId,options:oldItem.options?.filter(
-                    option=> option.name!==optionName)},
-                ...current
-            ]);
-            return oldItem.options?.filter(option=> option.name!==optionName);
-        }
-    }
+    //     if(oldItem){
+    //         const hasOption = Boolean(
+    //             oldItem.options?.find((aOption)=>aOption.name == optionName)
+    //         );
+    //         if(!hasOption){
+    //             removeFromOrder(dishId);
+    //             setOrderItems((current)=>[
+    //                 {dishId,options:[{name:optionName}, ...oldItem.options!]},
+    //                 ...current,
+    //             ]);
+    //             console.log(orderItems);
+    //         }
+    //     }
+    // }
+    // const removeOptionFromItem=(dishId:number,optionName:string)=>{
+    //     if(!isSelected(dishId)){
+    //         return;
+    //     }
+    //     const oldItem=getItem(dishId);
+    //     if(oldItem){
+    //         removeFromOrder(dishId);
+    //         setOrderItems((current)=>[
+    //             {dishId,options:oldItem.options?.filter(
+    //                 option=> option.name!==optionName)},
+    //             ...current
+    //         ]);
+    //         return oldItem.options?.filter(option=> option.name!==optionName);
+    //     }
+    // }
     const getOptionFromItem = (
         item:CreateOrderItemInput,
         optionName:string)=>{
@@ -167,28 +168,31 @@ export const Restaurant =()=>{
             alert('order created')
         }
     }
-    const[createOrderMutation,{loading:placeOrder}]=useMutation<createOrder,createOrderVariables>
-    (CREATE_ORDER_MUTATION,{
-        onCompleted
-    });
+
+
+    
+    // const[createOrderMutation,{loading:placeOrder}]=useMutation<createOrder,createOrderVariables>
+    // (CREATE_ORDER_MUTATION,{
+    //     onCompleted
+    // });
     const triggerConfirmOrder=()=>{
-        if(placeOrder){
-            return;
-        }
+        // if(placeOrder){
+        //     return;
+        // }
         if(orderItems.length===0){
             alert("Can't place empty")
             return;
         }
         const ok = window.confirm("You ar about to place an order");
         if(ok){
-            createOrderMutation({
-                variables:{
-                    input:{
-                        restaurantId:+params.id,
-                        items:orderItems,
-                    }
-                }
-            })
+            // createOrderMutation({
+            //     variables:{
+            //         input:{
+            //             restaurantId:+params.id,
+            //             items:orderItems,
+            //         }
+            //     }
+            // })
         }
     }
     return(
@@ -242,9 +246,9 @@ export const Restaurant =()=>{
                      price={dish.price}
                      isCustomer={true}
                      options={dish.options}
-                     addItemToOrder={addItemToOrder}
+                    //  addItemToOrder={addItemToOrder}
                      removeFromOrder={removeFromOrder}
-                     addOptionToItem={addOptionToItem}
+                    //  addOptionToItem={addOptionToItem}
                      dishModalOpen={dishModalOpen}
                      dishValue={dish}
                     >
@@ -255,8 +259,8 @@ export const Restaurant =()=>{
                             name={option.name}
                             extra={option.extra}
                             dishId={dish.id}
-                            addOptionToItem={addOptionToItem}
-                            removeOptionFromItem={removeOptionFromItem}
+                            // addOptionToItem={addOptionToItem}
+                            // removeOptionFromItem={removeOptionFromItem}
                             />
                     ))}
                     </Dish>

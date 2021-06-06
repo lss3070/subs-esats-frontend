@@ -31,6 +31,9 @@ export interface CreateAccountInput {
   email: string;
   password: string;
   role: UserRole;
+  zipCode?: number | null;
+  address?: string | null;
+  detailAddress?: string | null;
 }
 
 export interface CreateDishInput {
@@ -49,6 +52,7 @@ export interface CreateOrderInput {
 
 export interface CreateOrderItemInput {
   dishId: number;
+  count: number;
   options?: OrderItemOptionInputType[] | null;
 }
 
