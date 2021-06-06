@@ -14,6 +14,7 @@ export const AddressSearch:React.FC<IAddressProps>=({onclose,addAddress})=>{
 
     
     const addressComplete=(data:AddressData)=>{
+      console.log(data);
         let address = data.address;
         let extraAddress = "";
     

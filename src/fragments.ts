@@ -10,6 +10,8 @@ import { gql } from "@apollo/client";
 //         totalResults
 //     }
 // `
+
+
 export const MYRESTAURANT_FRAGMENT= gql`
 fragment MyRestaurantParts on Restaurant{
   id
@@ -23,6 +25,16 @@ fragment MyRestaurantParts on Restaurant{
 }
 `;
 
+export const USER_FRAGMENT= gql`
+  fragment UserParts on User{
+      id
+      email
+      role
+      zipCode
+      address
+      detailAddress
+    }
+`
 export const RESTAURANT_FRAGMENT = gql`
     fragment RestaurantParts on Restaurant{
       id

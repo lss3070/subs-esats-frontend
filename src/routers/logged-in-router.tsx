@@ -17,6 +17,7 @@ import { AddDish } from '../pages/owner/add-dish';
 import { Order } from '../pages/order';
 import { DashBoard } from '../pages/driver/dashboard';
 import { UserRole } from '../__generated__/globalTypes';
+import { Orders } from '../pages/driver/orders';
 
 
 const customeRoutes=[
@@ -72,7 +73,8 @@ const commonRoutes = [
 ];
 
 const driverRoutes =[
-    {path:"/",component:<DashBoard/>}
+    {path:"/",component:<Orders/>},
+    {path:"/dashBoard",component:<DashBoard/>}
 ]
 
 const restaurantRoutes  =[
