@@ -6,6 +6,8 @@ import { Order } from '../../components/order';
 import { FULL_ORDER_FRAGMENT, RESTAURANT_FRAGMENT, USER_FRAGMENT } from "../../fragments";
 import { OrderStatus } from "../../__generated__/globalTypes";
 import { ordersQuery, ordersQueryVariables } from '../../__generated__/ordersQuery';
+import { DashBoard } from './dashboard';
+import GoogleMapReact from 'google-map-react';
 
 
 const ORDERS_QUERY = gql`
@@ -61,6 +63,13 @@ export const Orders=()=>{
             }
         }
     });
+    const onApiLoaded =({map,maps}:{map:any,maps:any})=>{
+        // map.panTo(new google.maps.LatLng(driverCoords.lat,driverCoords.lng));
+        // setMap(map);
+        // setMaps(maps);
+    }
+
+
     console.log(data?.getOrders.ok&&data.getOrders.orders);
     return(
 
@@ -68,15 +77,28 @@ export const Orders=()=>{
         <Helmet>
           <title>Home |Sub's Eats</title>
         </Helmet>
+        <div>
+        <GoogleMapReact
+            
+            yesIWantToUseGoogleMapApiInternals
+            onGoogleApiLoaded={onApiLoaded}
+            bootstrapURLKeys={{key:"AIzaSyBTrXLEW2gzwzHw7e6HNE2nskvZnYQdAcE"}}
+            defaultZoom={16}
+            defaultCenter={{
+                lat:36.58,
+                lng:125.95
+            }}
+        >
+        </GoogleMapReact>
+        </div>
         <div className="max-w-screen-2xl pb-20 mx-auto mt-8">
             {data?.getOrders.ok&&data.getOrders.orders?.map((order)=>
                 <Order 
                 orderId={order.id}
                 restaurantName={order.restaurant?.name!}
                 restaurantImg={order.restaurant?.coverImg!}
-                restaurantZipCode={order.restaurant?.zipCode!}
-                customerZipCode={order.customer?.zipCode!}
-                customerAddress={order.customer?.address!+order.customer?.detailAddress}
+                restaurantAddress={order.restaurant?.address!}
+                customerAddress={order.customer?.address!}
                 />
             )
             }

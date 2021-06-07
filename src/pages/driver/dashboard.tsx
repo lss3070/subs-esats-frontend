@@ -42,7 +42,7 @@ export const DashBoard =()=>{
     const [driverCoords,setDriverCoords]= useState<ICoords>({lng:0,lat:0});
     const [map,setMap] = useState<google.maps.Map>();
     const [maps,setMaps] = useState<any>();
-
+    console.log("start");
     //@ts-ignore
     const onSuccess=({coords:{latitude,longitude}}:Position)=>{
         setDriverCoords({lat:latitude,lng:longitude})
@@ -57,20 +57,21 @@ export const DashBoard =()=>{
         })
     },[]);
     useEffect(()=>{
+        console.log("effect");
         if(map && maps){
             map.panTo(new google.maps.LatLng(driverCoords.lat,driverCoords.lng));
 
-            //google 연동 결제 됨 
-            // const geocoder = new google.maps.Geocoder();
-            // geocoder.geocode(
-            //     {
-            //         location: new google.maps.LatLng(driverCoords.lat,driverCoords.lng),
-            //     },
-            //     (results,status)=>{
-            //         console.log(status,results);
+            // google 연동 결제 됨 
+            const geocoder = new google.maps.Geocoder();
+            geocoder.geocode(
+                {
+                    location: new google.maps.LatLng(driverCoords.lat,driverCoords.lng),
+                },
+                (results,status)=>{
+                    console.log(status,results);
 
-            //     }
-            // );
+                }
+            );
         }
     },[driverCoords.lat,driverCoords.lng])
     const onApiLoaded =({map,maps}:{map:any,maps:any})=>{
@@ -79,6 +80,7 @@ export const DashBoard =()=>{
         setMaps(maps);
     }
     const makeRoute=()=>{
+       
         if(map){
             const directionsService = new google.maps.DirectionsService();
             const directionsRenderer = new google.maps.DirectionsRenderer({polylineOptions:{
@@ -142,7 +144,7 @@ export const DashBoard =()=>{
         <GoogleMapReact
             yesIWantToUseGoogleMapApiInternals
             onGoogleApiLoaded={onApiLoaded}
-            bootstrapURLKeys={{key:"AIzaSyC-TwQItJHA06gC8gwHtT578TwTO5p6nhM"}}
+            bootstrapURLKeys={{key:"AIzaSyBTrXLEW2gzwzHw7e6HNE2nskvZnYQdAcE"}}
             defaultZoom={16}
             defaultCenter={{
                 lat:36.58,
