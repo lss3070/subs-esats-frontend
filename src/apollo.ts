@@ -19,6 +19,9 @@ const wsLink = new WebSocketLink({
     }
   }
 })
+const apiLink = createHttpLink({
+  uri:"https://naveropenapi.apigw.ntruss.com/"
+})
 const httpLink = createHttpLink({
   uri:process.env.NODE_ENV==="production"?"https://subs-eats-backend.herokuapp.com/graphql":"http://localhost:4000/graphql"
 });
@@ -41,7 +44,7 @@ const splitLink = split(
     )
   },
   wsLink,
-  authLink.concat(httpLink)
+  authLink.concat(httpLink),
 )
 
 export const client = new ApolloClient({

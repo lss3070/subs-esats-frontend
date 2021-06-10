@@ -9,7 +9,6 @@ import { ordersQuery, ordersQueryVariables } from '../../__generated__/ordersQue
 import { DashBoard } from './dashboard';
 import GoogleMapReact from 'google-map-react';
 
-
 const ORDERS_QUERY = gql`
   query ordersQuery($input: GetOrdersInput!) {
 

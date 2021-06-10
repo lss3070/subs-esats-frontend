@@ -4,6 +4,8 @@
 import React, { useState, useEffect } from "react";
 import GoogleMapReact from 'google-map-react';
 import { Link } from "react-router-dom";
+import axios from 'axios';
+
 interface IOrderProgs{
     orderId:number;
     restaurantName:string;
@@ -19,13 +21,6 @@ interface PlaceInfo{
 }
 
 
-
-declare global {
-    interface Window {
-      kakao: any;
-    }
-  }
-
 export const Order:React.FC<IOrderProgs>=(
     {orderId,restaurantName,restaurantImg,restaurantAddress,customerAddress})=>{
         const [map,setMap] = useState<google.maps.Map>();
@@ -38,7 +33,6 @@ export const Order:React.FC<IOrderProgs>=(
 
         const service= new google.maps.DistanceMatrixService();
         const geocoder = new google.maps.Geocoder();
-        const kakaoDistance= new window.kakao()
 
         useEffect(()=>{
              geocoder.geocode({address:customerAddress},function(results,status){
@@ -63,33 +57,56 @@ export const Order:React.FC<IOrderProgs>=(
                         lng:results[0].geometry.location.lng(),
                         placeId:results[0].place_id
                     })
-                    console.log(results[0]);
-                    console.log(restaurantLatLng)
                 }else{
                     alert("fail status!!");
                 }
             });
        },[]);
        useEffect(()=>{
-
-        console.log("!!!!")
-        console.log(restaurantLatLng);
-        console.log(customerLatLng)
-
-        //google api 정확도 떨어져서 daum 지도로 바꿈...
-        customerLatLng&&restaurantLatLng&&service.getDistanceMatrix(
+  
+        if(restaurantLatLng?.lat&&restaurantLatLng?.lng&&customerLatLng?.lat&&customerLatLng?.lng){
+            const cc = axios(`https://naveropenapi.apigw.ntruss.com/map-direction/v1/driving?start=${restaurantLatLng?.lat},${restaurantLatLng?.lng}&&goal=${customerLatLng?.lat},${customerLatLng?.lng}&&option=trafast`,
             {
-                origins:[{
-                    placeId:restaurantLatLng.placeId, }],
-                destinations: [{
-                placeId:customerLatLng.placeId}],
-                travelMode: google.maps.TravelMode.WALKING,
-                // transitOptions: TransitOptions,
-                // drivingOptions: DrivingOptions,
-                unitSystem: google.maps.UnitSystem.METRIC,
-                avoidHighways: false,
-                avoidTolls: false,
-            },callback)
+                method: 'GET',
+                headers: {
+                    "X-NCP-APIGW-API-KEY-ID": "m6bcbwpcqv",
+                    "X-NCP-APIGW-API-KEY": "egZEV3OWuoueN5kooBDNkDyLhQlO05WaI3ZyRs4d",
+                },
+              }).then(response => {
+                  console.log("!!!!")
+                console.log(response);
+              }).catch(e=>{
+                  console.log("error");
+                  console.log(e)
+              })
+              console.log(cc);
+            //   const temp= axios.create({
+            //     headers:{
+            //     'X-NCP-APIGW-API-KEY-ID': 'm6bcbwpcqv',
+            //     "X-NCP-APIGW-API-KEY":'egZEV3OWuoueN5kooBDNkDyLhQlO05WaI3ZyRs4d',
+            //     "Access-Control-Allow-Origin": "*",
+            //     }
+            // })
+
+            // const aa= temp.get(`https://naveropenapi.apigw.ntruss.com/map-direction/v1/driving?start=${restaurantLatLng?.lat},${restaurantLatLng?.lng}&&goal=${customerLatLng?.lat},${customerLatLng?.lng}&&option=trafast`)
+            // console.log(aa);
+    
+        }
+        
+             //google api 정확도 떨어져서 naver 지도로 바꿈...
+        // customerLatLng&&restaurantLatLng&&service.getDistanceMatrix(
+        //     {
+        //         origins:[{
+        //             placeId:restaurantLatLng.placeId, }],
+        //         destinations: [{
+        //         placeId:customerLatLng.placeId}],
+        //         travelMode: google.maps.TravelMode.WALKING,
+        //         // transitOptions: TransitOptions,
+        //         // drivingOptions: DrivingOptions,
+        //         unitSystem: google.maps.UnitSystem.METRIC,
+        //         avoidHighways: false,
+        //         avoidTolls: false,
+        //     },callback)
        });
 
         const callback=(response:google.maps.DistanceMatrixResponse,
