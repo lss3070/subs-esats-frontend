@@ -2,15 +2,11 @@
 import { gql, useQuery } from "@apollo/client";
 import React, { useState } from "react";
 import { Helmet } from "react-helmet-async";
-
-import { USER_FRAGMENT } from "../../fragments";
-import { OrderStatus } from "../../__generated__/globalTypes";
-import { ordersQuery, ordersQueryVariables } from '../../__generated__/ordersQuery';
+import { Order } from './order';
+import { USER_FRAGMENT } from "../fragments";
+import { OrderStatus } from "../__generated__/globalTypes";
+import { ordersQuery, ordersQueryVariables } from '../__generated__/ordersQuery';
 import GoogleMapReact from 'google-map-react';
-import  {RouteComponentProps, useParams}  from 'react-router-dom';
-import {  OrderNavi } from "../../components/orderNavi";
-import { Order } from "../../components/order";
-import useEffect from 'react';
 
 const ORDERS_QUERY = gql`
   query ordersQuery($input: GetOrdersInput!) {
@@ -55,15 +51,8 @@ const ORDERS_QUERY = gql`
 `;
 
 
-interface IParams{
-    type:OrderStatus;
-}
-
 export const Orders=()=>{
-    
-    const {type} =useParams<IParams>();
-    const [status,setStatus]= useState(type);
-    // const [status,setStatus]= useState(OrderStatus.Pending)
+    const [status,setStatus]= useState(OrderStatus.Pending)
     const{data,loading,error}=useQuery<
     ordersQuery,ordersQueryVariables
     >(ORDERS_QUERY,{
@@ -73,13 +62,15 @@ export const Orders=()=>{
             }
         }
     });
+
+
+    console.log(data?.getOrders.ok&&data.getOrders.orders);
     return(
 
         <div>
         <Helmet>
-          <title>Orders |Sub's Eats</title>
+          <title>Home |Sub's Eats</title>
         </Helmet>
-        <OrderNavi/>
         <div>
         <GoogleMapReact
             yesIWantToUseGoogleMapApiInternals

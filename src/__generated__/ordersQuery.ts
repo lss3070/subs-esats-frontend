@@ -60,6 +60,7 @@ export interface ordersQuery_getOrders_orders {
   items: ordersQuery_getOrders_orders_items[];
   total: number | null;
   status: OrderStatus;
+  createdAt: any;
   customer: ordersQuery_getOrders_orders_customer | null;
   restaurant: ordersQuery_getOrders_orders_restaurant | null;
 }

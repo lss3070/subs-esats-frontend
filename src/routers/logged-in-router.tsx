@@ -1,6 +1,6 @@
 import { gql, useQuery } from '@apollo/client';
 import React from 'react';
-import { BrowserRouter as Router,Redirect,Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router,Redirect,Route, RouteComponentProps, Switch } from 'react-router-dom';
 import { Restaurants } from '../pages/client/restaurants';
 import { Header } from '../components/header';
 import { useMe } from '../hooks/useMe';
@@ -74,6 +74,7 @@ const commonRoutes = [
 
 const driverRoutes =[
     {path:"/",component:<Orders/>},
+    {path:"/orders/:type",component:<Orders/>},
     {path:"/dashBoard",component:<DashBoard/>}
 ]
 
@@ -85,11 +86,9 @@ const restaurantRoutes  =[
     {path:"/restaurants/:restaurantId/add-dish", component:<AddDish/>}
 ]
 
-
-
 export const LoggedInRouter=()=> 
 {
-    const {data,loading,error}=useMe();
+    const {data,loading,error}=useMe(); 
     if(!data || loading || error){
         return (
         <div className="h-screen flex justify-center items-center">
