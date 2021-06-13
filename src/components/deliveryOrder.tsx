@@ -5,7 +5,7 @@ import axios from 'axios';
 import jsonp from 'jsonp';
 import { gql, useMutation } from "@apollo/client";
 import { takeOrder, takeOrderVariables } from '../__generated__/takeOrder';
-import { EDIT_ORDER } from "../pages/order";
+import { EDIT_ORDER } from '../pages/order';
 import { editOrder, editOrderVariables } from "../__generated__/editOrder";
 import { OrderStatus } from "../__generated__/globalTypes";
 import { OrderNaviProps } from './orderNavi';
@@ -38,12 +38,13 @@ mutation takeOrder($input:TakeOrderInput!){
     }
 `
 
+
 interface IParams{
     id:string;
 }
 
 
-export const Order:React.FC<IOrderProgs>=(
+export const DeliveryOrder:React.FC<IOrderProgs>=(
     {orderId,restaurantName,restaurantImg,restaurantAddress,customerAddress,customerDetailAddress,orderDate,status,naviStatus})=>{
         const [map,setMap] = useState<google.maps.Map>();
         const [customerLatLng,setCustomerLatLng] = useState<PlaceInfo>();
@@ -57,7 +58,8 @@ export const Order:React.FC<IOrderProgs>=(
         const geocoder = new google.maps.Geocoder();
 
         useEffect(()=>{
-             geocoder.geocode({address:customerAddress},function(results,status){
+
+            naviStatus!==OrderNaviProps.Complete&& geocoder.geocode({address:customerAddress},function(results,status){
                     if(status==google.maps.GeocoderStatus.OK){
                         setCustomerLatLng({
                             lat:results[0].geometry.location.lat(),
@@ -72,7 +74,7 @@ export const Order:React.FC<IOrderProgs>=(
                 })
         },[]);
         useEffect(()=>{
-             geocoder.geocode({address:restaurantAddress},function(results,status){
+            naviStatus!==OrderNaviProps.Complete&& geocoder.geocode({address:restaurantAddress},function(results,status){
                 if(status==google.maps.GeocoderStatus.OK){
                     setRestaurantLatLng({
                         lat:results[0].geometry.location.lat(),
@@ -112,7 +114,7 @@ export const Order:React.FC<IOrderProgs>=(
         // }
         
              //google api 정확도 떨어져서 naver 지도로 바꿈...
-        customerLatLng&&restaurantLatLng&&service.getDistanceMatrix(
+             naviStatus!==OrderNaviProps.Complete&& customerLatLng&&restaurantLatLng&&service.getDistanceMatrix(
             {
                 origins:[{
                     placeId:restaurantLatLng.placeId, }],
@@ -158,10 +160,10 @@ export const Order:React.FC<IOrderProgs>=(
             }
         }
 
-        // const [editOrderMutation] = useMutation<
-        // editOrder,editOrderVariables>(EDIT_ORDER,{
-        //     onCompleted,
-        //  })
+        const [editOrderMutation] = useMutation<
+        editOrder,editOrderVariables>(EDIT_ORDER,{
+            
+         })
          const [takeOrderMutation] = useMutation<
          takeOrder,takeOrderVariables>(TAKE_ORDER,{
             onCompleted
@@ -179,8 +181,19 @@ export const Order:React.FC<IOrderProgs>=(
                 }
             })
         }
-        const onPickUp=()=>{
-
+        const onStatusChange=()=>{
+            const item =status===OrderStatus.PickedUp?OrderStatus.Deliverd:(
+                status===OrderStatus.Cooked?OrderStatus.PickedUp:status);
+                console.log(status);
+                console.log(item);
+            editOrderMutation({
+                variables:{
+                    input:{
+                        id:orderId,
+                        status:item
+                    }
+                }
+            })
         }
         return(
             <div className="flex flex-col">
@@ -208,23 +221,33 @@ export const Order:React.FC<IOrderProgs>=(
                         </span>
                     </div>
                     <div className="float-right">
-                        <div>
-                            예상시간 {duration}
-                        </div>
-                        <div>
-                            거리  {distance}
-                        </div>
+                        {naviStatus!==OrderNaviProps.Complete&&(
+                            <div>
+                                <div>
+                                    예상시간 {duration}
+                                </div>
+                                <div>
+                                    거리  {distance}
+                                </div>
+                            </div>
+                        ) 
+                        }
                         {naviStatus===OrderNaviProps.Pending&&(
-                            <div onClick={onDeliverySelect} className="btn text-center">
+                            <div onClick={onDeliverySelect} className="btn text-center cursor-pointer">
                                 Delivery Select
                             </div>
                         )}
                         {status===OrderStatus.Cooked&&naviStatus===OrderNaviProps.Progress&&(
                             <div>
-                                <div className="btn text-center">Picked Up</div>
-                                <div className="cancel-btn text-center">Delivery Cancel</div>
+                                <div onClick={onStatusChange} className="btn cursor-pointer text-center">Picked Up</div>
+                                <div className="cancel-btn cursor-pointer text-center">Delivery Cancel</div>
                             </div>
-                           
+                        )}
+                        {status===OrderStatus.PickedUp&&naviStatus===OrderNaviProps.Progress&&(
+                            <div>
+                                <div onClick={onStatusChange} className="btn cursor-pointer text-center">Deliverd</div>
+                                <div className="cancel-btn cursor-pointer text-center">Pickedup Cancel</div>
+                            </div>
                         )}
                         {/* {naviStatus===OrderNaviProps.Complete&&(
                              <div>

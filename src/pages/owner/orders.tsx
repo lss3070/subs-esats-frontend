@@ -12,52 +12,12 @@ import {  OrderNavi, OrderNaviProps } from "../../components/orderNavi";
 import { DeliveryOrder } from "../../components/deliveryOrder";
 import { multipleOrdersQuery, multipleOrdersQueryVariables } from "../../__generated__/multipleOrdersQuery";
 import { useMe } from "../../hooks/useMe";
+import { OwnerOrder } from "../../components/ownerOrder";
 
-const ORDERS_QUERY = gql`
-  query ordersQuery($input: GetOrdersInput!) {
 
-    getOrders(input: $input) {
-      ok
-      error
-      orders {
-        id
-        items{       
-                id
-                count
-                options{
-                    name
-                    choice
-                }
-        }
-        total
-        status
-        createdAt
-        customer{
-            ...UserParts
-        }
-        restaurant{
-            id
-            name
-            coverImg
-            category{
-                name
-            }
-            zipCode
-            address
-            isPromoted
-            divisions{
-                name
-            }
-        }
-      }
-    }
-  }
-  ${USER_FRAGMENT}
-`;
+const OWNER_MULTIPLE_ORDERS_QUERY = gql`
 
-const MULTIPLE_ORDERS_QUERY = gql`
-
-query multipleOrdersQuery($input: GetMultipleOrdersInput!) {
+query ownerMultipleOrdersQuery($input: GetMultipleOrdersInput!) {
 
 getMultipleOrders(input: $input) {
   ok
@@ -106,7 +66,7 @@ interface IParams{
     type:OrderNaviProps;
 }
 
-export const DriverOrders=()=>{
+export const OwnerOrders=()=>{
     
     const {type} =useParams<IParams>();
     const {data:userData}=useMe();
@@ -125,7 +85,7 @@ export const DriverOrders=()=>{
 
     const{data,loading,error}=useQuery<
     multipleOrdersQuery,multipleOrdersQueryVariables
-    >(MULTIPLE_ORDERS_QUERY,{
+    >(OWNER_MULTIPLE_ORDERS_QUERY,{
         variables:{
             input:{
                 status,
@@ -135,12 +95,10 @@ export const DriverOrders=()=>{
     useEffect(()=>{
         switch(type){
             case OrderNaviProps.Pending:
-                console.log("!!");
-                setStatus([OrderStatus.Cooked,
-                    OrderStatus.Cooking,OrderStatus.Pending]);
+                setStatus([OrderStatus.Pending]);
                 break;
             case OrderNaviProps.Progress:
-                setStatus([OrderStatus.Cooked,OrderStatus.Cooking,OrderStatus.Pending,OrderStatus.PickedUp]);
+                setStatus([OrderStatus.Cooking,OrderStatus.Cooked,OrderStatus.PickedUp]);
                 break;
             case OrderNaviProps.Complete:
                 setStatus([OrderStatus.Deliverd]);
@@ -155,7 +113,7 @@ export const DriverOrders=()=>{
         </Helmet>
         <OrderNavi/>
         <div>
-        <GoogleMapReact
+        {/* <GoogleMapReact
             yesIWantToUseGoogleMapApiInternals
             bootstrapURLKeys={{key:"AIzaSyBTrXLEW2gzwzHw7e6HNE2nskvZnYQdAcE"}}
             defaultZoom={16}
@@ -164,19 +122,18 @@ export const DriverOrders=()=>{
                 lng:125.95
             }}
         >
-        </GoogleMapReact>
+        </GoogleMapReact> */}
         </div>
         <div className="max-w-screen-2xl pb-20 mx-auto mt-8">
             {data?.getMultipleOrders.ok&&data.getMultipleOrders.orders?.map((order)=>{
                 console.log(order);
                 console.log(userData?.me.id);
-                if(type===OrderNaviProps.Pending&&order.driver===null){
                     return(
-                        <DeliveryOrder 
+                        <OwnerOrder 
                         orderId={order.id}
                         restaurantName={order.restaurant?.name!}
-                        restaurantImg={order.restaurant?.coverImg!}
-                        restaurantAddress={order.restaurant?.address!}
+                        total={order.total!}
+                        items={order.items}
                         customerAddress={order.customer?.address!}
                         customerDetailAddress={order.customer?.detailAddress!}
                         orderDate={order.createdAt}
@@ -184,24 +141,7 @@ export const DriverOrders=()=>{
                         naviStatus={type}
                         />
                     )
-                }else if((type===OrderNaviProps.Progress||type===OrderNaviProps.Complete)&&
-                     order.driver?.id===userData?.me.id){
-                return(
-                    <DeliveryOrder 
-                    orderId={order.id}
-                    restaurantName={order.restaurant?.name!}
-                    restaurantImg={order.restaurant?.coverImg!}
-                    restaurantAddress={order.restaurant?.address!}
-                    customerAddress={order.customer?.address!}
-                    customerDetailAddress={order.customer?.detailAddress!}
-                    orderDate={order.createdAt}
-                    status={order.status}
-                    naviStatus={type}
-                    />
-                )
-                }
-            }   
-            )
+                    })
             }
 
         </div>

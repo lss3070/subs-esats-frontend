@@ -7,6 +7,7 @@ import { useMe } from "../hooks/useMe";
 import mainlogo from "../images/logo.svg"
 import { Modal } from "../pages/modal";
 import { Cart } from "./cart";
+import { UserRole } from '../__generated__/globalTypes';
 
 interface IHeaderProps {
     email:string;
@@ -57,7 +58,7 @@ export const Header:React.FC=() => {
                         </span>
                     </span>
                 </div>
-                {cartOpen&&(
+                {data?.me.role===UserRole.Customer&&cartOpen&&(
                         <Modal><Cart onclose={closeCart} postion={position!}/></Modal>
                     )}
             </header>

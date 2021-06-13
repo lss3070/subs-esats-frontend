@@ -17,7 +17,8 @@ import { AddDish } from '../pages/owner/add-dish';
 import { Order } from '../pages/order';
 import { DashBoard } from '../pages/driver/dashboard';
 import { UserRole } from '../__generated__/globalTypes';
-import { Orders } from '../pages/driver/orders';
+import { DriverOrders } from '../pages/driver/orders';
+import { OwnerOrders } from '../pages/owner/orders';
 
 
 const customeRoutes=[
@@ -73,13 +74,14 @@ const commonRoutes = [
 ];
 
 const driverRoutes =[
-    {path:"/",component:<Orders/>},
-    {path:"/orders/:type",component:<Orders/>},
+    {path:"/",component:<DriverOrders/>},
+    {path:"/orders/:type",component:<DriverOrders/>},
     {path:"/dashBoard",component:<DashBoard/>}
 ]
 
-const restaurantRoutes  =[
+const ownerRoutes  =[
     {path:"/",component:<MyRestaurants/>},
+    {path:"/orders/:type",component:<OwnerOrders/>},
     {path:"/add-restaurant",component:<AddRestaurant/>},
     {path:"/restaurants/:id",
     component:<MyRestaurant/>},
@@ -110,7 +112,7 @@ export const LoggedInRouter=()=>
                     {route.component}
                 </Route>
                 )}
-                {data.me.role===UserRole.Owner && restaurantRoutes.map((route)=>
+                {data.me.role===UserRole.Owner && ownerRoutes.map((route)=>
                     <Route exact key={route.path} path={route.path}>
                         {route.component}
                     </Route>
