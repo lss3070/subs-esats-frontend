@@ -1,13 +1,14 @@
-
-
-
 import React, { useState, useEffect } from "react";
 import GoogleMapReact from 'google-map-react';
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import axios from 'axios';
 import jsonp from 'jsonp';
 import { gql, useMutation } from "@apollo/client";
 import { takeOrder, takeOrderVariables } from '../__generated__/takeOrder';
+import { EDIT_ORDER } from "../pages/order";
+import { editOrder, editOrderVariables } from "../__generated__/editOrder";
+import { OrderStatus } from "../__generated__/globalTypes";
+import { OrderNaviProps } from './orderNavi';
 
 interface IOrderProgs{
     orderId:number;
@@ -17,7 +18,8 @@ interface IOrderProgs{
     customerAddress:string;
     customerDetailAddress:string;
     orderDate:string;
-    status:string
+    status:OrderStatus;
+    naviStatus:OrderNaviProps;
 }
 
 interface PlaceInfo{
@@ -26,7 +28,7 @@ interface PlaceInfo{
     placeId:string;
 }
 
-const TAKE_ORDER_MUTATION =gql`
+const TAKE_ORDER =gql`
 
 mutation takeOrder($input:TakeOrderInput!){
     takeOrder(input:$input){
@@ -36,11 +38,13 @@ mutation takeOrder($input:TakeOrderInput!){
     }
 `
 
-
+interface IParams{
+    id:string;
+}
 
 
 export const Order:React.FC<IOrderProgs>=(
-    {orderId,restaurantName,restaurantImg,restaurantAddress,customerAddress,customerDetailAddress,orderDate,status})=>{
+    {orderId,restaurantName,restaurantImg,restaurantAddress,customerAddress,customerDetailAddress,orderDate,status,naviStatus})=>{
         const [map,setMap] = useState<google.maps.Map>();
         const [customerLatLng,setCustomerLatLng] = useState<PlaceInfo>();
         const [restaurantLatLng,setRestaurantLatLng]= useState<PlaceInfo>();
@@ -63,7 +67,7 @@ export const Order:React.FC<IOrderProgs>=(
                         console.log(results[0]);
                         console.log(customerLatLng)
                     }else{
-                        alert("fail status!!");
+                        console.log("fail status!!");
                     }
                 })
         },[]);
@@ -76,7 +80,7 @@ export const Order:React.FC<IOrderProgs>=(
                         placeId:results[0].place_id
                     })
                 }else{
-                    alert("fail status!!");
+                    console.log("fail status!!");
                 }
             });
        },[]);
@@ -129,25 +133,56 @@ export const Order:React.FC<IOrderProgs>=(
                 setDuration(response.rows[0].elements[0].duration.text);
         }
 
-        const onCompleted=()=>{
-            alert('success!!');
-        }
-        const [takeOrderMutation,{loading}]=useMutation<
-        takeOrder,takeOrderVariables>(TAKE_ORDER_MUTATION,{
-            onCompleted,
-        });
+    
+        // const onCompleted=(data:editOrder) =>{
 
-        const onClick=()=>{
-            takeOrderMutation(({
+        //     const{editOrder:{ok}}= data
+        //     if(ok){
+        //         console.log("success")
+        //         // history.push(`/orders/${orderId}`)
+        //         // alert('order created')
+        //     }else{
+        //         console.log("fail ㅠㅜ");
+        //     }
+        // }
+        const onCompleted=(data:takeOrder) =>{
+
+            const{takeOrder:{ok}}= data
+            if(ok){
+                window.location.reload();
+                // console.log("success")
+                // // history.push(`/orders/${orderId}`)
+                // // alert('order created')
+            }else{
+                console.log("fail ㅠㅜ");
+            }
+        }
+
+        // const [editOrderMutation] = useMutation<
+        // editOrder,editOrderVariables>(EDIT_ORDER,{
+        //     onCompleted,
+        //  })
+         const [takeOrderMutation] = useMutation<
+         takeOrder,takeOrderVariables>(TAKE_ORDER,{
+            onCompleted
+          })
+
+
+
+        const onDeliverySelect=()=>{
+            const updateStatus = status===OrderStatus.Cooked?OrderStatus.PickedUp:OrderStatus.Deliverd
+            takeOrderMutation({
                 variables:{
                     input:{
-                        id:+orderId
+                        id:orderId,
                     }
                 }
-            }))
+            })
+        }
+        const onPickUp=()=>{
+
         }
         return(
-        <Link to={``}>
             <div className="flex flex-col">
                 <div
                 style={{border:"1px solid red"}} 
@@ -179,13 +214,26 @@ export const Order:React.FC<IOrderProgs>=(
                         <div>
                             거리  {distance}
                         </div>
-                        <div onClick={onClick} className="btn text-center">
-                           픽업 선택
-                        </div>
+                        {naviStatus===OrderNaviProps.Pending&&(
+                            <div onClick={onDeliverySelect} className="btn text-center">
+                                Delivery Select
+                            </div>
+                        )}
+                        {status===OrderStatus.Cooked&&naviStatus===OrderNaviProps.Progress&&(
+                            <div>
+                                <div className="btn text-center">Picked Up</div>
+                                <div className="cancel-btn text-center">Delivery Cancel</div>
+                            </div>
+                           
+                        )}
+                        {/* {naviStatus===OrderNaviProps.Complete&&(
+                             <div>
+                                <div className="btn text-center">Detail</div>
+                                <div className="cancel-btn text-center">Delivery Cancel</div>
+                         </div>
+                        )} */}
                     </div>
                 </div>
             </div>
-        </Link>
-
     )
 }

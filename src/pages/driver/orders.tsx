@@ -1,6 +1,6 @@
 
 import { gql, useQuery } from "@apollo/client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 
 import { USER_FRAGMENT } from "../../fragments";
@@ -8,9 +8,10 @@ import { OrderStatus } from "../../__generated__/globalTypes";
 import { ordersQuery, ordersQueryVariables } from '../../__generated__/ordersQuery';
 import GoogleMapReact from 'google-map-react';
 import  {RouteComponentProps, useParams}  from 'react-router-dom';
-import {  OrderNavi } from "../../components/orderNavi";
+import {  OrderNavi, OrderNaviProps } from "../../components/orderNavi";
 import { Order } from "../../components/order";
-import useEffect from 'react';
+import { multipleOrdersQuery, multipleOrdersQueryVariables } from "../../__generated__/multipleOrdersQuery";
+import { useMe } from "../../hooks/useMe";
 
 const ORDERS_QUERY = gql`
   query ordersQuery($input: GetOrdersInput!) {
@@ -54,25 +55,98 @@ const ORDERS_QUERY = gql`
   ${USER_FRAGMENT}
 `;
 
+const MULTIPLE_ORDERS_QUERY = gql`
+
+query multipleOrdersQuery($input: GetMultipleOrdersInput!) {
+
+getMultipleOrders(input: $input) {
+  ok
+  error
+  orders {
+    id
+    items{       
+            id
+            count
+            options{
+                name
+                choice
+            }
+    }
+    total
+    status
+    createdAt
+    customer{
+        ...UserParts
+    }
+    driver{
+        id
+    }
+    restaurant{
+        id
+        name
+        coverImg
+        category{
+            name
+        }
+        zipCode
+        address
+        isPromoted
+        divisions{
+            name
+        }
+    }
+  }
+}
+}
+${USER_FRAGMENT}
+`
+
 
 interface IParams{
-    type:OrderStatus;
+    type:OrderNaviProps;
 }
 
 export const Orders=()=>{
     
     const {type} =useParams<IParams>();
-    const [status,setStatus]= useState(type);
+    const {data:userData}=useMe();
+    console.log(type);
+    const [status,setStatus]= useState<OrderStatus[]>();
     // const [status,setStatus]= useState(OrderStatus.Pending)
+    // const{data,loading,error}=useQuery<
+    // ordersQuery,ordersQueryVariables
+    // >(ORDERS_QUERY,{
+    //     variables:{
+    //         input:{
+    //             status,
+    //         }
+    //     }
+    // });
+
     const{data,loading,error}=useQuery<
-    ordersQuery,ordersQueryVariables
-    >(ORDERS_QUERY,{
+    multipleOrdersQuery,multipleOrdersQueryVariables
+    >(MULTIPLE_ORDERS_QUERY,{
         variables:{
             input:{
                 status,
             }
         }
     });
+    useEffect(()=>{
+        switch(type){
+            case OrderNaviProps.Pending:
+                console.log("!!");
+                setStatus([OrderStatus.Cooked,
+                    OrderStatus.Cooking,OrderStatus.Pending]);
+                break;
+            case OrderNaviProps.Progress:
+                setStatus([OrderStatus.Cooked,OrderStatus.Cooking,OrderStatus.Pending,OrderStatus.PickedUp]);
+                break;
+            case OrderNaviProps.Complete:
+                setStatus([OrderStatus.Deliverd]);
+                break;
+        }
+    },[]);
     return(
 
         <div>
@@ -93,17 +167,40 @@ export const Orders=()=>{
         </GoogleMapReact>
         </div>
         <div className="max-w-screen-2xl pb-20 mx-auto mt-8">
-            {data?.getOrders.ok&&data.getOrders.orders?.map((order)=>
-                <Order 
-                orderId={order.id}
-                restaurantName={order.restaurant?.name!}
-                restaurantImg={order.restaurant?.coverImg!}
-                restaurantAddress={order.restaurant?.address!}
-                customerAddress={order.customer?.address!}
-                customerDetailAddress={order.customer?.detailAddress!}
-                orderDate={order.createdAt}
-                status={order.status}
-                />
+            {data?.getMultipleOrders.ok&&data.getMultipleOrders.orders?.map((order)=>{
+                console.log(order);
+                console.log(userData?.me.id);
+                if(type===OrderNaviProps.Pending&&order.driver===null){
+                    return(
+                        <Order 
+                        orderId={order.id}
+                        restaurantName={order.restaurant?.name!}
+                        restaurantImg={order.restaurant?.coverImg!}
+                        restaurantAddress={order.restaurant?.address!}
+                        customerAddress={order.customer?.address!}
+                        customerDetailAddress={order.customer?.detailAddress!}
+                        orderDate={order.createdAt}
+                        status={order.status}
+                        naviStatus={type}
+                        />
+                    )
+                }else if((type===OrderNaviProps.Progress||type===OrderNaviProps.Complete)&&
+                     order.driver?.id===userData?.me.id){
+                return(
+                    <Order 
+                    orderId={order.id}
+                    restaurantName={order.restaurant?.name!}
+                    restaurantImg={order.restaurant?.coverImg!}
+                    restaurantAddress={order.restaurant?.address!}
+                    customerAddress={order.customer?.address!}
+                    customerDetailAddress={order.customer?.detailAddress!}
+                    orderDate={order.createdAt}
+                    status={order.status}
+                    naviStatus={type}
+                    />
+                )
+                }
+            }   
             )
             }
 

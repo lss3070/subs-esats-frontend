@@ -37,7 +37,7 @@ const ORDER_SUBSCRIPTION = gql`
 `
 ;
 
-const EDIT_ORDER = gql`
+export const EDIT_ORDER = gql`
     mutation editOrder($input:EditOrderInput!){
         editOrder(input:$input){
             ok

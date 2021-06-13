@@ -97,6 +97,10 @@ export interface EditProfileInput {
   password?: string | null;
 }
 
+export interface GetMultipleOrdersInput {
+  status?: OrderStatus[] | null;
+}
+
 export interface GetOrderInput {
   id: number;
 }

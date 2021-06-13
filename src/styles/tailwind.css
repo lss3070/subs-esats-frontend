@@ -21,6 +21,17 @@
     hover:bg-lime-700 
     transition-colors;
 }
+.cancel-btn{
+    @apply mt-3 
+    text-lg 
+    font-medium
+    focus:outline-none
+    text-white 
+    bg-red-600 
+    py-4 
+    hover:bg-red-700 
+    transition-colors;
+}
 .modal-wrap{
     @apply 
     top-0

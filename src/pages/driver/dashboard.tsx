@@ -18,14 +18,14 @@ const COOKED_ORDERS_SUBSCRIPTION =gql`
     ${FULL_ORDER_FRAGMENT}
 `
 
-const TAKE_ORDER_MUTATION= gql`
-    mutation takeOrder($input:TakeOrderInput!){
-        takeOrder(input:$input){
-            ok
-            error
-        }
-    }
-`
+// const TAKE_ORDER_MUTATION= gql`
+//     mutation takeOrder($input:TakeOrderInput!){
+//         takeOrder(input:$input){
+//             ok
+//             error
+//         }
+//     }
+// `
 
 interface ICoords{
     lat:number;
@@ -123,19 +123,19 @@ export const DashBoard =()=>{
             history.push(`/orders/${cookedOrdersData?.cookedOrders.id}`)
         }
     }
-    const[takeOrderMutation]= useMutation<takeOrder,takeOrderVariables>(
-        TAKE_ORDER_MUTATION,{
-            onCompleted
-    });
-    const triggerMutation = (orderId:number)=>{
-        takeOrderMutation({
-            variables:{
-                input:{
-                    id: orderId
-                }
-            }
-        })
-    }
+    // const[takeOrderMutation]= useMutation<takeOrder,takeOrderVariables>(
+    //     TAKE_ORDER_MUTATION,{
+    //         onCompleted
+    // });
+    // const triggerMutation = (orderId:number)=>{
+    //     takeOrderMutation({
+    //         variables:{
+    //             input:{
+    //                 id: orderId
+    //             }
+    //         }
+    //     })
+    // }
     return (
         <div>
         <div className=" bg-gray-800 overflow-hidden" 
@@ -170,8 +170,9 @@ export const DashBoard =()=>{
                 Pick it up soon @ {cookedOrdersData.cookedOrders.restaurant?.name}
             </h4>
             <button 
-            onClick={
-                ()=>triggerMutation(cookedOrdersData.cookedOrders.id)} 
+            onClick={()=>null
+            //     triggerMutation(cookedOrdersData.cookedOrders.id)
+            } 
             className="btn w-full mt-5 block text-center">
                 Accept Challenge &rarr;
             </button>
