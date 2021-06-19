@@ -184,8 +184,6 @@ export const DeliveryOrder:React.FC<IOrderProgs>=(
         const onStatusChange=()=>{
             const item =status===OrderStatus.PickedUp?OrderStatus.Deliverd:(
                 status===OrderStatus.Cooked?OrderStatus.PickedUp:status);
-                console.log(status);
-                console.log(item);
             editOrderMutation({
                 variables:{
                     input:{

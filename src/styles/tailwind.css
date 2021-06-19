@@ -19,7 +19,23 @@
     bg-lime-600 
     py-4 
     hover:bg-lime-700 
-    transition-colors;
+    transition-colors
+    cursor-pointer;
+}
+.mini-btn{
+    @apply
+    mt-2
+    text-lg
+    font-medium
+    focus:outline-none
+    text-white 
+    bg-lime-600 
+    hover:bg-lime-700 
+    transition-colors
+    py-2
+    px-2
+   cursor-pointer;
+
 }
 .cancel-btn{
     @apply mt-3 
@@ -39,7 +55,7 @@
     fixed
     z-999
     w-full
-    h-full
+   
     grid
     justify-center
     align-middle
@@ -67,6 +83,10 @@
     p-4
     max-w-lg
     h-auto
+}
+#modal{
+    @apply
+    bg-gray-700
 }
 
 @tailwind utilities;

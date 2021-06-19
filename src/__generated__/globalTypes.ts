@@ -90,6 +90,7 @@ export interface DivisionInputType {
 export interface EditOrderInput {
   id: number;
   status: OrderStatus;
+  deliveryTime?: number | null;
 }
 
 export interface EditProfileInput {
@@ -125,6 +126,12 @@ export interface OrderItemOptionInputType {
 
 export interface OrderUpdatesInput {
   id: number;
+}
+
+export interface ReceiptOrderInput {
+  id: number;
+  status: OrderStatus;
+  deliveryTime?: number | null;
 }
 
 export interface RestaurantInput {
