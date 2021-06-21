@@ -9,6 +9,11 @@ import { GetOrdersInput, OrderStatus, UserRole } from "./globalTypes";
 // GraphQL query operation: ordersQuery
 // ====================================================
 
+export interface ordersQuery_getOrders_orders_items_dish {
+  __typename: "Dish";
+  name: string;
+}
+
 export interface ordersQuery_getOrders_orders_items_options {
   __typename: "OrderItemOption";
   name: string;
@@ -19,6 +24,7 @@ export interface ordersQuery_getOrders_orders_items {
   __typename: "OrderItem";
   id: number;
   count: number | null;
+  dish: ordersQuery_getOrders_orders_items_dish;
   options: ordersQuery_getOrders_orders_items_options[] | null;
 }
 

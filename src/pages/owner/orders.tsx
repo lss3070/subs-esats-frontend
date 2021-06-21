@@ -13,6 +13,7 @@ import { DeliveryOrder } from "../../components/deliveryOrder";
 import { multipleOrdersQuery, multipleOrdersQueryVariables } from "../../__generated__/multipleOrdersQuery";
 import { useMe } from "../../hooks/useMe";
 import { OwnerOrder } from "../../components/ownerOrder";
+import { ownerMultipleOrdersQuery, ownerMultipleOrdersQueryVariables } from '../../__generated__/ownerMultipleOrdersQuery';
 
 
 const OWNER_MULTIPLE_ORDERS_QUERY = gql`
@@ -25,6 +26,9 @@ getMultipleOrders(input: $input) {
   orders {
     id
     items{       
+            dish{
+                name
+            }
             id
             count
             options{
@@ -61,7 +65,6 @@ getMultipleOrders(input: $input) {
 ${USER_FRAGMENT}
 `
 
-
 interface IParams{
     type:OrderNaviProps;
 }
@@ -70,21 +73,11 @@ export const OwnerOrders=()=>{
     
     const {type} =useParams<IParams>();
     const {data:userData}=useMe();
-    console.log(type);
+   
     const [status,setStatus]= useState<OrderStatus[]>();
-    // const [status,setStatus]= useState(OrderStatus.Pending)
-    // const{data,loading,error}=useQuery<
-    // ordersQuery,ordersQueryVariables
-    // >(ORDERS_QUERY,{
-    //     variables:{
-    //         input:{
-    //             status,
-    //         }
-    //     }
-    // });
 
     const{data,loading,error}=useQuery<
-    multipleOrdersQuery,multipleOrdersQueryVariables
+    ownerMultipleOrdersQuery,ownerMultipleOrdersQueryVariables
     >(OWNER_MULTIPLE_ORDERS_QUERY,{
         variables:{
             input:{
@@ -105,6 +98,7 @@ export const OwnerOrders=()=>{
                 break;
         }
     },[]);
+    console.log(error);
     return(
 
         <div>
@@ -113,27 +107,16 @@ export const OwnerOrders=()=>{
         </Helmet>
         <OrderNavi/>
         <div>
-        {/* <GoogleMapReact
-            yesIWantToUseGoogleMapApiInternals
-            bootstrapURLKeys={{key:"AIzaSyBTrXLEW2gzwzHw7e6HNE2nskvZnYQdAcE"}}
-            defaultZoom={16}
-            defaultCenter={{
-                lat:36.58,
-                lng:125.95
-            }}
-        >
-        </GoogleMapReact> */}
         </div>
         <div className="max-w-screen-2xl pb-20 mx-auto mt-8">
             {data?.getMultipleOrders.ok&&data.getMultipleOrders.orders?.map((order)=>{
-                console.log(order);
-                console.log(userData?.me.id);
                     return(
                         <OwnerOrder 
                         orderId={order.id}
                         restaurantName={order.restaurant?.name!}
                         total={order.total!}
                         items={order.items}
+                        image={order.restaurant?.coverImg!}
                         customerAddress={order.customer?.address!}
                         customerDetailAddress={order.customer?.detailAddress!}
                         orderDate={order.createdAt}
@@ -143,7 +126,6 @@ export const OwnerOrders=()=>{
                     )
                     })
             }
-
         </div>
         </div>
     );

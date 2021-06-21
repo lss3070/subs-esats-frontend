@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { OrderStatus } from "../__generated__/globalTypes";
 import { OrderNaviProps } from './orderNavi';
-import {  multipleOrdersQuery_getMultipleOrders_orders_items } from "../__generated__/multipleOrdersQuery";
 import { gql, useMutation } from "@apollo/client";
 import { editOrder, editOrderVariables } from "../__generated__/editOrder";
 import { EDIT_ORDER } from "../pages/order";
 import { Modal } from "../pages/modal";
 import { OwnerTimeModal } from "./ownerTimeModal";
 import { receiptOrder, receiptOrderVariables } from '../__generated__/receiptOrder';
+import styled from 'styled-components'
+import { ownerMultipleOrdersQuery_getMultipleOrders_orders_items } from "../__generated__/ownerMultipleOrdersQuery";
 
 interface IOrderProgs{
     orderId:number;
@@ -17,8 +18,9 @@ interface IOrderProgs{
     orderDate:string;
     status:OrderStatus;
     naviStatus:OrderNaviProps;
+    image:string;
     total:number;
-    items:multipleOrdersQuery_getMultipleOrders_orders_items[];
+    items:ownerMultipleOrdersQuery_getMultipleOrders_orders_items[];
 }
 interface IParams{
     id:string;
@@ -32,12 +34,10 @@ mutation receiptOrder($input:ReceiptOrderInput!) {
         error
     }
 }
-
 `
 
-
 export const OwnerOrder:React.FC<IOrderProgs>=(
-    {orderId,restaurantName,customerAddress,customerDetailAddress,orderDate,status,naviStatus,
+    {orderId,restaurantName,customerAddress,customerDetailAddress,orderDate,status,image,naviStatus,
     total,items})=>{
 
         const[submitOpen,setSubmitOpen]=useState(false);
@@ -96,12 +96,31 @@ export const OwnerOrder:React.FC<IOrderProgs>=(
             })
         }
          
-
+        const OrderItem = styled.div`
+         &:after{
+             /* background-color: aqua; */
+             background-image: url(${image});
+             opacity:1;
+             top:0;
+             left:0;
+             position:absolute;
+            background-size:100%;
+            border:1px solid red;
+            width: 100%;
+            height:100%;
+            }
+        `
         return(
             <div >
-                <div
-                style={{border:"1px solid red"}} 
-                className="bg-cover bg-center mb-3 py-10 flex flex-row w-full">
+                <OrderItem
+                className="
+                bg-cover 
+                bg-center 
+                mb-3 
+                py-10 
+                flex 
+                flex-row 
+                w-full">
                     <div>
                         <h2 className="text-4xl">{new Date(orderDate).getUTCHours()}:{new Date(orderDate).getUTCMinutes()}</h2>
                         <h2 className="text-center text-xl">{status}</h2>
@@ -113,7 +132,7 @@ export const OwnerOrder:React.FC<IOrderProgs>=(
                         </div>
                         {items.map((item)=>{
                             return(
-                                <span>{item.id}/</span>
+                                <span>{item.dish.name}/</span>
                             )
                         })}
                         <div> {customerAddress} {customerDetailAddress}</div>
@@ -138,7 +157,7 @@ export const OwnerOrder:React.FC<IOrderProgs>=(
                     orderId={orderId} status={status}
                     onPreSubmit={onSubmit}
                     /></Modal>)}
-                </div>
+                </OrderItem>
             </div>
     )
 }

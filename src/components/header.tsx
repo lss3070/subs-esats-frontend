@@ -47,9 +47,11 @@ export const Header:React.FC=() => {
                         <img src={mainlogo} className="w-36 mb-10" alt="Nuber eats"/>
                     </Link>
                     <span className="text-xs">
+                        {data?.me.role===UserRole.Client&&(
                         <span onClick={openCart} className="text-xl cursor-pointer mr-2">
                             <FontAwesomeIcon icon={faShoppingCart} className="text-xl"></FontAwesomeIcon>
                         </span>
+                        )}
                         <Link to="/edit-profile/">
                             <FontAwesomeIcon icon={faUser} className="text-xl mr-2"/>
                         </Link>
@@ -58,7 +60,7 @@ export const Header:React.FC=() => {
                         </span>
                     </span>
                 </div>
-                {data?.me.role===UserRole.Customer&&cartOpen&&(
+                {data?.me.role===UserRole.Client&&cartOpen&&(
                         <Modal><Cart onclose={closeCart} postion={position!}/></Modal>
                     )}
             </header>

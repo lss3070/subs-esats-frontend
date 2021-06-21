@@ -19,6 +19,8 @@ import { DashBoard } from '../pages/driver/dashboard';
 import { UserRole } from '../__generated__/globalTypes';
 import { DriverOrders } from '../pages/driver/orders';
 import { OwnerOrders } from '../pages/owner/orders';
+import { OwnerIndex } from '../pages/owner/owner-index';
+import { ClientOrders } from '../pages/client/orders';
 
 
 const customeRoutes=[
@@ -56,7 +58,10 @@ const clientRoutes=[
     },{
         path:"/restaurants/:id",
         component:<Restaurant/>
-    }
+    },{
+        path:"/orders",
+        component:<ClientOrders/>
+    },
 ]
 const commonRoutes = [
     {
@@ -80,9 +85,10 @@ const driverRoutes =[
 ]
 
 const ownerRoutes  =[
-    {path:"/",component:<MyRestaurants/>},
+    {path:"/",component:<OwnerIndex/>},
     {path:"/orders/:type",component:<OwnerOrders/>},
     {path:"/add-restaurant",component:<AddRestaurant/>},
+    {path:"/restaurants",component:<MyRestaurants/>},
     {path:"/restaurants/:id",
     component:<MyRestaurant/>},
     {path:"/restaurants/:restaurantId/add-dish", component:<AddDish/>}

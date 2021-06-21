@@ -24,6 +24,9 @@ const ORDERS_QUERY = gql`
         items{       
                 id
                 count
+                dish{
+                    name
+                }
                 options{
                     name
                     choice
@@ -67,6 +70,9 @@ getMultipleOrders(input: $input) {
     items{       
             id
             count
+            dish{
+                name
+            }
             options{
                 name
                 choice

@@ -9,6 +9,12 @@ import { GetMultipleOrdersInput, OrderStatus, UserRole } from "./globalTypes";
 // GraphQL query operation: ownerMultipleOrdersQuery
 // ====================================================
 
+export interface ownerMultipleOrdersQuery_getMultipleOrders_orders_items_dish {
+  __typename: "Dish";
+  id: number;
+  name: string;
+}
+
 export interface ownerMultipleOrdersQuery_getMultipleOrders_orders_items_options {
   __typename: "OrderItemOption";
   name: string;
@@ -17,6 +23,7 @@ export interface ownerMultipleOrdersQuery_getMultipleOrders_orders_items_options
 
 export interface ownerMultipleOrdersQuery_getMultipleOrders_orders_items {
   __typename: "OrderItem";
+  dish: ownerMultipleOrdersQuery_getMultipleOrders_orders_items_dish;
   id: number;
   count: number | null;
   options: ownerMultipleOrdersQuery_getMultipleOrders_orders_items_options[] | null;

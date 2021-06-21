@@ -20,7 +20,7 @@
     py-4 
     hover:bg-lime-700 
     transition-colors
-    cursor-pointer;
+    cursor-pointer
 }
 .mini-btn{
     @apply
@@ -88,5 +88,6 @@
     @apply
     bg-gray-700
 }
+
 
 @tailwind utilities;
