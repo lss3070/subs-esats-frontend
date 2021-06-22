@@ -98,7 +98,6 @@ export const OwnerOrders=()=>{
                 break;
         }
     },[]);
-    console.log(error);
     return(
 
         <div>
@@ -108,7 +107,7 @@ export const OwnerOrders=()=>{
         <OrderNavi/>
         <div>
         </div>
-        <div className="max-w-screen-2xl pb-20 mx-auto mt-8">
+        <div className="max-w-screen-2xl pb-20 mx-auto mt-16">
             {data?.getMultipleOrders.ok&&data.getMultipleOrders.orders?.map((order)=>{
                     return(
                         <OwnerOrder 

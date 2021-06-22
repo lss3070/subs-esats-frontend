@@ -1,4 +1,5 @@
-import { faRegistered } from "@fortawesome/free-solid-svg-icons";
+import { faRegistered,faChevronDown } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { MouseEvent, useState } from "react";
 import { useForm } from "react-hook-form";
 import { AddDish } from '../pages/owner/add-dish';
@@ -12,6 +13,8 @@ export interface ICartModalProps{
     restaurantId:number;
     id:number;
     name:string;
+    description:string;
+    photo:string;
     count:number;
     price:number;
     options:{
@@ -112,6 +115,10 @@ export const DishModal:React.FC<DishModalProps>=({onclose,addDish})=>{
                 }
             }
     }
+    const onDropDown =(e:React.MouseEventHandler<HTMLSpanElement>):void=>{
+        console.log("!!");
+        console.log(e.name);
+    }
     
     const {
         register,
@@ -166,19 +173,28 @@ export const DishModal:React.FC<DishModalProps>=({onclose,addDish})=>{
     })
     return (
     <div className="modal-wrap">
-      <div className="modal-header">
+      <div className="modal-header w-2/5">
         <span onClick={onclose} className="float-right cursor-pointer">X</span>
       </div>
-      <div  className="modal-content">
+      <div className="modal-content w-2/5">
           <form onSubmit={handleSubmit(onSubmit)} >
-            <div>
-                <span>{addDish.name}</span>
+            <div className=" mb-20">
+                <div className=" text-4xl">{addDish.name}</div>
+                <div className=" text-xl">{addDish.description}</div>
             </div>
             <div>
                 {addDish.options?.map((option,index)=>{
                         if(option.choices!){
                             return( <div>
-                                <span>{option.name} down</span>
+                                <div className="w-full bg-gradient-to-r from-gray-300 text-2xl p-6">
+                                    <span>{option.name} </span>
+                                    <span className=" border-2 border-gray-500 rounded-full w-8 h-8; text-xl text-center
+                                    cursor-pointer
+                                    float-right "
+                                    onClick={onDropDown}
+                                    ><FontAwesomeIcon icon={faChevronDown}/>
+                                    </span>
+                                </div>
                                 {option.choices.map((choice)=>{
                                     return (
                                     <div>
@@ -197,7 +213,9 @@ export const DishModal:React.FC<DishModalProps>=({onclose,addDish})=>{
                                         value={choice.name}
                                         type="radio"/>
                                         <span>{choice.name}</span>
-                                        <span>{choice.extra}</span>
+                                        {choice.extra&&(
+                                            <span className="float-right">+$ {choice.extra}</span>
+                                        )}
                                     </div>
                                     )
                                 })}
@@ -227,16 +245,23 @@ export const DishModal:React.FC<DishModalProps>=({onclose,addDish})=>{
                 })
                 }
             </div>
-            <div>
-                <span onClick={onCounDecrease}>-</span>
-                <span>{count}</span>
-                <span onClick={onCounIncrease}>+</span>
-                <Button actionText="Add Order" loading={false} canClick={isValid}/>
-                <span>{count*price}</span>
+            <div className=" grid grid-cols-3">
+                <div className="col-span-1 flex">
+                    <span className=" bg-gray-500 w-10 h-10 rounded-full text-center align-middle text-3xl mx-3
+                    text-white" 
+                    onClick={onCounDecrease}>-</span>
+                    <span className="text-3xl mx-3" >{count}</span>
+                    <span className="bg-gray-500 w-10 h-10 rounded-full text-center align-middle text-3xl mx-3
+                     text-white"
+                     onClick={onCounIncrease}>+</span>
+                </div>
+                <div className="col-span-2">
+                    <Button actionText="Add Order" loading={false} canClick={isValid}/>
+                    <span>{count*price}</span>
+                </div>
             </div>
           </form>
       </div>
     </div>
-    )
-}
+    )}
    

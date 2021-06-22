@@ -97,35 +97,34 @@ export const OwnerOrder:React.FC<IOrderProgs>=(
         }
          
         const OrderItem = styled.div`
-         &:after{
+         &::before{
              /* background-color: aqua; */
-             background-image: url(${image});
-             opacity:1;
-             top:0;
-             left:0;
+             content:"";
+             background-image: url(${image}) !important;
+             opacity:0.5;
              position:absolute;
             background-size:100%;
-            border:1px solid red;
-            width: 100%;
-            height:100%;
+            width:100%;
+
+            min-height:160px;
+            z-index:-1;
             }
         `
         return(
-            <div >
+            <div className="mb-10" style={{height:160}}>
                 <OrderItem
                 className="
                 bg-cover 
                 bg-center 
-                mb-3 
-                py-10 
-                flex 
-                flex-row 
+                grid 
+                grid-cols-10
+                h-full
                 w-full">
-                    <div>
-                        <h2 className="text-4xl">{new Date(orderDate).getUTCHours()}:{new Date(orderDate).getUTCMinutes()}</h2>
-                        <h2 className="text-center text-xl">{status}</h2>
+                    <div className="col-span-1 flex flex-col justify-center">
+                        <h2 className="text-4xl text-center  ">{new Date(orderDate).getUTCHours()}:{new Date(orderDate).getUTCMinutes()}</h2>
+                        <h2 className="text-center text-xl ">{status}</h2>
                     </div>
-                    <div className="ml-4">
+                    <div className="ml-4 col-span-7 flex flex-col justify-center">
                         <div>
                             <span>[메뉴{items.length}개 ]</span>
                             <span>${total}</span>
@@ -139,9 +138,9 @@ export const OwnerOrder:React.FC<IOrderProgs>=(
                         <div>{restaurantName}</div>
                     </div>
                     {status===OrderStatus.Pending&&(
-                        <div className=" max-w-full">
-                            <div onClick={openSubmit} className="btn">접수하기</div>
-                            <div className="cancel-btn">주문 취소</div>
+                        <div className="col-span-2 pr-6 flex flex-col justify-center">
+                            <div onClick={openSubmit} className="btn text-center">접수하기</div>
+                            <div className="cancel-btn text-center">주문 취소</div>
                         </div>
                     )
                     }

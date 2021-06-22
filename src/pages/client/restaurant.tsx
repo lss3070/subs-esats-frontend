@@ -80,6 +80,8 @@ export const Restaurant =()=>{
             restaurantId:+params.id,
             id:dish.id,
             name:dish.name,
+            description:dish.description,
+            photo:dish.photo!,
             count:1,
             price:dish.price,
             options:options

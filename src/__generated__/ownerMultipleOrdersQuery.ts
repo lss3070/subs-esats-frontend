@@ -11,7 +11,6 @@ import { GetMultipleOrdersInput, OrderStatus, UserRole } from "./globalTypes";
 
 export interface ownerMultipleOrdersQuery_getMultipleOrders_orders_items_dish {
   __typename: "Dish";
-  id: number;
   name: string;
 }
 

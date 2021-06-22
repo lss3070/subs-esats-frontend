@@ -46,6 +46,7 @@
     bg-red-600 
     py-4 
     hover:bg-red-700 
+    cursor-pointer
     transition-colors;
 }
 .modal-wrap{
@@ -55,9 +56,12 @@
     fixed
     z-999
     w-full
-   
-    grid
+    h-full
+    flex
+    flex-col
+    flex-wrap
     justify-center
+    items-center
     align-middle
 }
 .modal-cart{
@@ -73,16 +77,13 @@
 
 .modal-content{@apply
     bg-white
-    p-4
-    max-w-lg
+    w-1/4
     h-auto
 }
 .modal-header{
     @apply
     bg-white
-    p-4
-    max-w-lg
-    h-auto
+    w-1/4
 }
 #modal{
     @apply

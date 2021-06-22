@@ -44,8 +44,8 @@ export const OwnerTimeModal:React.FC<IModalProps>=({onclose,onPreSubmit,orderId,
                 <span className="w-1/3 text-center cursor-pointer"  onClick={()=>setTime(90)}>90분</span>
               </div>
           </div>
-          <div className="mt-2">
-            <input type="" pattern="[0-9]*" onChange={onChange} placeholder="배달시간을 입력하세요" value={time}/>
+          <div className="mt-2 flex flex-row justify-center">
+            <input  type="" pattern="[0-9]*" onChange={onChange} placeholder="배달시간을 입력하세요" value={time}/>
             <span onClick={onSubmit} className="mini-btn w-1/5">접수</span>
           </div>
       </div>
