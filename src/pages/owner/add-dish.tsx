@@ -31,6 +31,7 @@ interface IForm {
     name: string;
     price: string;
     description: string;
+    file:string;
     [key: string]: string;
   }
 interface IDivisions{
@@ -40,6 +41,9 @@ interface IDivisions{
 
 
 export const AddDish = ()=>{
+
+    const [uploading,setUploading] = useState(false);
+    const [imageUrl,setImageUrl]= useState("");
     const {restaurantId}= useParams<IParams>();
     const history = useHistory();
     const params =useParams<{restaurantId:string}>()
@@ -70,26 +74,42 @@ export const AddDish = ()=>{
       } = useForm<IForm>({
           mode:"onChange"
       });
-      const onSubmit=()=>{
-        const {name,price,description,...rest}= getValues();
+      const onSubmit= async()=>{
+        setUploading(true);
+        const {file,name,price,description,...rest}= getValues();
 
         const optionsObjects= optionsNumber.map((theId)=>({
             name: rest[`${theId}-optionName`],
-            extra:+rest[`${theId}-optionExtra`]
+            extra:+rest[`${theId}-optionExtra`],
+            choice: [],
+            
         }))
         const divisionObjects = divisionValue.map((division)=>({
             name:division.name
         }))
 
+        const actualFile=file[0];
+        const formbody = new FormData();
+        formbody.append("file",actualFile);
+        const {url:coverImg} = await(
+            await fetch("http://localhost:4000/uploads",{
+            method:"POST",
+            body:formbody
+        })
+        ).json();
+        setImageUrl(coverImg);
+
+
+
         const divsions = divisionValue;
-        console.log(optionsObjects)
-        console.log(divsions)
+
         createDishMutation({
             variables:{
                 input:{
                     name,
                     price:+price,
                     description,
+                    photo:coverImg,
                     restaurantId:+restaurantId,
                     options:optionsObjects,
                     divisions:divisionObjects
@@ -99,12 +119,39 @@ export const AddDish = ()=>{
 
         history.goBack();
       };
-      const [optionsNumber, setOptionsNumber] = useState<number[]>([])
+      interface optionNumberProps{
+        id:number;
+        group:boolean;
+        parentId:number|undefined;
+      }
+
+      const [optionsNumber, setOptionsNumber] = useState<optionNumberProps[]>([])
       const onAddOptionClick=()=>{
-        setOptionsNumber((current)=> [Date.now(), ...current]);
+        setOptionsNumber((current)=> 
+        [{id:Date.now(),group:false,parentId:undefined}, ...current]);
       };
+      const onAddGroupClick=()=>{
+        setOptionsNumber((current)=> 
+        [{id:Date.now(),group:true,parentId:undefined}, ...current]);
+      }
+      const onAddGroupItemClick=(id:number)=>{
+        setOptionsNumber((current)=>{
+            const parentNode= current.find((cur)=>cur.id===id);
+            const parentIndex = current.indexOf(parentNode!);
+            console.log(parentIndex);
+            const before = current.slice(0,parentIndex+1)
+            console.log(current);
+            const after = current.slice(parentIndex-1,current.length);
+            console.log(before);
+            console.log(after);
+            return[
+                ...before,{id:Date.now(),group:false,parentId:id},...after
+            ]
+        });
+        }
+      
       const onDeleteClick=(idToDelete:number)=>{
-        setOptionsNumber(current=>current.filter((id)=>id!==idToDelete));
+        setOptionsNumber(current=>current.filter((item)=>item.id!==idToDelete));
         //
         setValue(`${idToDelete}-optionName`,"")
         setValue(`${idToDelete}-optionExtra`,"")
@@ -153,6 +200,8 @@ export const AddDish = ()=>{
                         }
                     })}
                 />
+   
+
                 {
                     restaurantQuery.data?.restaurant.restaurant?.divisions&&
                     <Autocomplete
@@ -183,6 +232,15 @@ export const AddDish = ()=>{
                         {...params} variant="outlined"></TextField>
                     }/>
                 }
+                <div>
+                    <span>Banner Image</span>
+                    <input type="file" accept="image/" {...register("file",{
+                        required:{
+                            value:true,
+                            message:"!!"
+                        }
+                    })}/>
+                </div>
                 <div className="my-10">
                     <h4 className="font-medium mb-3 text-lg">Dish Options</h4>
                     <span
@@ -190,34 +248,98 @@ export const AddDish = ()=>{
                     className="cursor-pointer text-white bg-gray-900 py-1 px-2 mt-5 bg-">
                         Add Dish Option
                     </span>
+                    <span
+                    onClick={onAddGroupClick}
+                    className="cursor-pointer text-white bg-gray-900 py-1 px-2 mt-5 ml-2">
+                        Add Group Option
+                    </span>
                     {optionsNumber.length !== 0 &&
-                          optionsNumber.map((id) => (
-                        <div key={id} className="mt-5">
-                            <input 
-                            {...register(`${id}-optionName`,{
-                            })}
-                            className="py-2 px-4 mr-3 focus:outline-none focus:border-gray-600 border-2" 
-                            type="text" 
-                            placeholder="Option Name"
-                            />
-                            
-                            <input 
-                            {...register(`${id}-optionExtra`,{
+                          optionsNumber.map((option) => (
+                        <div key={option.id} className="mt-5">
+                            {option.group===true?
+                            (
+                                <div>
+                                    <input 
+                                    {...register(`${option.id}-optionName`,{
+                                    })}
+                                    className="py-2 px-4 mr-3 focus:outline-none focus:border-gray-600 border-2 w-2/4" 
+                                    type="text" 
+                                    placeholder="Option Name"
+                                    />
+                                     <span 
+                                    className="cursor-pointer 
+                                    bg-green-500 
+                                    ml-3 
+                                    text-white 
+                                    py-3 px-4 mt-5 bg-"
+                                    onClick={()=>onAddGroupItemClick(option.id)} role="button">Add Option</span>
+                                                   <span 
+                                    className="cursor-pointer 
+                                    bg-red-500 
+                                    ml-3 
+                                    text-white 
+                                    py-3 px-4 mt-5 bg-"
+                                    onClick={()=>onDeleteClick(option.id)} role="button">Delete Group</span>
+                                </div>
+                            )
+                            : option.parentId!==undefined?
+                            (
+                                <div className="ml-2">                           
+                                <input 
+                                {...register(`${option.id}-optionName`,{
+                                })}
+                                className="py-2 px-4 mr-3 focus:outline-none focus:border-gray-600 border-2" 
+                                type="text" 
+                                placeholder="Option Name"
+                                />
+                                <input 
+                                {...register(`${option.id}-optionExtra`,{
 
-                            })}
-                            className="py-2 px-4 focus:outline-none focus:border-gray-600 border-2" 
-                            type="nubmer" 
-                            min={0}
-                            defaultValue={0}
-                            placeholder="Option extra"
-                            />
-                            <span 
-                            className="cursor-pointer 
-                            bg-red-500 
-                            ml-3 
-                            text-white 
-                            py-3 px-4 mt-5 bg-"
-                            onClick={()=>onDeleteClick(id)} role="button">Delete button</span>
+                                })}
+                                className="py-2 px-4 focus:outline-none focus:border-gray-600 border-2" 
+                                type="nubmer" 
+                                min={0}
+                                defaultValue={0}
+                                placeholder="Option extra"
+                                />
+                                <span 
+                                className="cursor-pointer 
+                                bg-red-500 
+                                ml-3 
+                                text-white 
+                                py-3 px-4 mt-5 bg-"
+                                onClick={()=>onDeleteClick(option.id)} role="button">Delete button</span>
+                            </div>
+                            ):
+                            (
+                                <div>
+                                    <input 
+                                    {...register(`${option.id}-optionName`,{
+                                    })}
+                                    className="py-2 px-4 mr-3 focus:outline-none focus:border-gray-600 border-2" 
+                                    type="text" 
+                                    placeholder="Option Name"
+                                    />
+                                    <input 
+                                    {...register(`${option.id}-optionExtra`,{
+
+                                    })}
+                                    className="py-2 px-4 focus:outline-none focus:border-gray-600 border-2" 
+                                    type="nubmer" 
+                                    min={0}
+                                    defaultValue={0}
+                                    placeholder="Option extra"
+                                    />
+                                                   <span 
+                                    className="cursor-pointer 
+                                    bg-red-500 
+                                    ml-3 
+                                    text-white 
+                                    py-3 px-4 mt-5 bg-"
+                                    onClick={()=>onDeleteClick(option.id)} role="button">Delete Option</span>
+                                </div>
+                            )
+                        }
                     </div>
                     ))}
                 </div>

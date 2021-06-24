@@ -7,6 +7,7 @@ import { Button } from './button';
 import { ICartProps, useCartsDispatch } from '../context/CartsContext';
 import { type } from "node:os";
 import { v4 as uuidv4 } from 'uuid';
+import { url } from "node:inspector";
 
 
 export interface ICartModalProps{
@@ -115,9 +116,14 @@ export const DishModal:React.FC<DishModalProps>=({onclose,addDish})=>{
                 }
             }
     }
-    const onDropDown =(e:React.MouseEventHandler<HTMLSpanElement>):void=>{
+    const onDropDown =(e:React.MouseEvent<HTMLSpanElement>):void=>{
         console.log("!!");
-        console.log(e.name);
+        const area = e.currentTarget.parentElement?.parentElement;
+        
+        for(let i = 1;i<area?.childElementCount!; i++){
+            area?.children[i].classList.toggle('hidden');
+        }
+        
     }
     
     const {
@@ -173,10 +179,13 @@ export const DishModal:React.FC<DishModalProps>=({onclose,addDish})=>{
     })
     return (
     <div className="modal-wrap">
-      <div className="modal-header w-2/5">
-        <span onClick={onclose} className="float-right cursor-pointer">X</span>
-      </div>
+      {/* <div className="modal-header w-2/5">
+        
+      </div> */}
       <div className="modal-content w-2/5">
+        <span onClick={onclose} className="float-right cursor-pointer">X</span>
+          <div  className="bg-gray-700 py-28 bg-center bg-cover"
+           style={{backgroundImage:`url(${addDish.photo})`}}/>
           <form onSubmit={handleSubmit(onSubmit)} >
             <div className=" mb-20">
                 <div className=" text-4xl">{addDish.name}</div>
@@ -197,7 +206,7 @@ export const DishModal:React.FC<DishModalProps>=({onclose,addDish})=>{
                                 </div>
                                 {option.choices.map((choice)=>{
                                     return (
-                                    <div>
+                                    <div className="m-4">
                                         <input {...register(`${option.name}`,{
                                             required:{
                                                 value: option.require,
@@ -211,10 +220,12 @@ export const DishModal:React.FC<DishModalProps>=({onclose,addDish})=>{
                                             choice.name,
                                             e)}
                                         value={choice.name}
-                                        type="radio"/>
+                                        type="radio"
+                                        className="mx-4"
+                                        />
                                         <span>{choice.name}</span>
                                         {choice.extra&&(
-                                            <span className="float-right">+$ {choice.extra}</span>
+                                            <span className="float-right text-gray-500">+$ {choice.extra}</span>
                                         )}
                                     </div>
                                     )
@@ -222,7 +233,7 @@ export const DishModal:React.FC<DishModalProps>=({onclose,addDish})=>{
                             </div>)
                         }else{
                             return(
-                                <div>
+                                <div className="m-4">
                                 <input {...register(`${option.name}`,{
                                     required:{
                                         value: option.require,
@@ -236,9 +247,10 @@ export const DishModal:React.FC<DishModalProps>=({onclose,addDish})=>{
                                     undefined,
                                     e)}
                                 value={option.extra+""}
-                                type="radio"/>
+                                type="radio"
+                                className="mx-4"/>
                                     <span>{option.name}</span>
-                                    <span>+${option.extra}</span>
+                                    <span className="float-right text-gray-500">+$ {option.extra}</span>
                                 </div>
                             )
                         }
