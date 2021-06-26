@@ -78,46 +78,61 @@ export const AddDish = ()=>{
         setUploading(true);
         const {file,name,price,description,...rest}= getValues();
 
-        const optionsObjects= optionsNumber.map((theId)=>({
-            name: rest[`${theId}-optionName`],
-            extra:+rest[`${theId}-optionExtra`],
+        const optionsObjects= optionsNumber.map((theId)=>(
+         {
+            name: rest[`${theId.id}-optionName`],
+            extra:+rest[`${theId.id}-optionExtra`],
             choice: [],
-            
         }))
+
+        console.log(optionsObjects);
+
+        // optionsNumber.map((option)=>{
+        //     const index = optionsObjects.findIndex((value)=>
+        //         value.name===option.parentId+"-optionName"
+        //     )
+        //     optionsObjects[index].choice=[...{
+        //         name:"",
+        //         extra:0,
+        //     }]
+        // })
+
+
+
+       
+
         const divisionObjects = divisionValue.map((division)=>({
             name:division.name
         }))
 
-        const actualFile=file[0];
-        const formbody = new FormData();
-        formbody.append("file",actualFile);
-        const {url:coverImg} = await(
-            await fetch("http://localhost:4000/uploads",{
-            method:"POST",
-            body:formbody
-        })
-        ).json();
-        setImageUrl(coverImg);
+        // const actualFile=file[0];
+        // const formbody = new FormData();
+        // formbody.append("file",actualFile);
+        // const {url:coverImg} = await(
+        //     await fetch("http://localhost:4000/uploads",{
+        //     method:"POST",
+        //     body:formbody
+        // })
+        // ).json();
+        // setImageUrl(coverImg);
 
+        // const divsions = divisionValue;
 
+        // createDishMutation({
+        //     variables:{
+        //         input:{
+        //             name,
+        //             price:+price,
+        //             description,
+        //             photo:coverImg,
+        //             restaurantId:+restaurantId,
+        //             options:optionsObjects,
+        //             divisions:divisionObjects
+        //         }
+        //     }
+        // })
 
-        const divsions = divisionValue;
-
-        createDishMutation({
-            variables:{
-                input:{
-                    name,
-                    price:+price,
-                    description,
-                    photo:coverImg,
-                    restaurantId:+restaurantId,
-                    options:optionsObjects,
-                    divisions:divisionObjects
-                }
-            }
-        })
-
-        history.goBack();
+        // history.goBack();
       };
       interface optionNumberProps{
         id:number;
@@ -139,11 +154,8 @@ export const AddDish = ()=>{
             const parentNode= current.find((cur)=>cur.id===id);
             const parentIndex = current.indexOf(parentNode!);
             console.log(parentIndex);
-            const before = current.slice(0,parentIndex+1)
-            console.log(current);
-            const after = current.slice(parentIndex-1,current.length);
-            console.log(before);
-            console.log(after);
+            const before = current.slice(0,parentIndex+1);
+            const after = current.slice(parentIndex+1,current.length);
             return[
                 ...before,{id:Date.now(),group:false,parentId:id},...after
             ]
