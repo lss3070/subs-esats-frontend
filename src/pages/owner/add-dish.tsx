@@ -12,6 +12,7 @@ import { RESTAURANT_QUERY } from '../client/restaurant';
 import { restaurant, restaurantVariables } from '../../__generated__/restaurant';
 import {TextField} from '@material-ui/core'
 import Chip from '@material-ui/core/Chip';
+import { DishOptionInputType } from '../../__generated__/globalTypes';
 
 
 const CREATE_DISH_MUTATION =gql`
@@ -38,6 +39,10 @@ interface IDivisions{
     name:string
 }
 
+interface IChoice{
+    name:string;
+    extra:number;
+}
 
 
 export const AddDish = ()=>{
@@ -78,61 +83,65 @@ export const AddDish = ()=>{
         setUploading(true);
         const {file,name,price,description,...rest}= getValues();
 
-        const optionsObjects= optionsNumber.map((theId)=>(
-         {
-            name: rest[`${theId.id}-optionName`],
-            extra:+rest[`${theId.id}-optionExtra`],
-            choice: [],
-        }))
-
+        //step one parentid 기준 정렬
+        //step two 부모값만 먼저 Object 넣고
+        //step three 자식값 부모값 찾아서 넣기
+        let optionsObjects= optionsNumber.map((theId):DishOptionInputType=>
+          {
+              if(theId.parentId===undefined){
+                return{
+                    name: rest[`${theId.id}-optionName`],
+                    extra:+rest[`${theId.id}-optionExtra`],
+                    choices:new Array<IChoice>(),
+                }
+              }
+        }).filter(Boolean);
         console.log(optionsObjects);
-
-        // optionsNumber.map((option)=>{
-        //     const index = optionsObjects.findIndex((value)=>
-        //         value.name===option.parentId+"-optionName"
-        //     )
-        //     optionsObjects[index].choice=[...{
-        //         name:"",
-        //         extra:0,
-        //     }]
-        // })
-
-
-
-       
+        optionsNumber.map((theId)=>{
+            const index= optionsObjects.findIndex((option)=>option?.name===rest[`${theId.parentId}-optionName`]);
+      
+            if(index>=0){
+                console.log(index);
+                console.log(rest[`${theId.id}-optionName`])
+                optionsObjects[index]?.choices.push({
+                    name:rest[`${theId.id}-optionName`],
+                    extra:+rest[`${theId.id}-optionExtra`]
+                })
+            }
+        });
 
         const divisionObjects = divisionValue.map((division)=>({
             name:division.name
         }))
 
-        // const actualFile=file[0];
-        // const formbody = new FormData();
-        // formbody.append("file",actualFile);
-        // const {url:coverImg} = await(
-        //     await fetch("http://localhost:4000/uploads",{
-        //     method:"POST",
-        //     body:formbody
-        // })
-        // ).json();
-        // setImageUrl(coverImg);
+        const actualFile=file[0];
+        const formbody = new FormData();
+        formbody.append("file",actualFile);
+        const {url:coverImg} = await(
+            await fetch("http://localhost:4000/uploads",{
+            method:"POST",
+            body:formbody
+        })
+        ).json();
+        setImageUrl(coverImg);
 
-        // const divsions = divisionValue;
+        const divsions = divisionValue;
 
-        // createDishMutation({
-        //     variables:{
-        //         input:{
-        //             name,
-        //             price:+price,
-        //             description,
-        //             photo:coverImg,
-        //             restaurantId:+restaurantId,
-        //             options:optionsObjects,
-        //             divisions:divisionObjects
-        //         }
-        //     }
-        // })
+        createDishMutation({
+            variables:{
+                input:{
+                    name,
+                    price:+price,
+                    description,
+                    photo:coverImg,
+                    restaurantId:+restaurantId,
+                    options:optionsObjects,
+                    divisions:divisionObjects
+                }
+            }
+        })
 
-        // history.goBack();
+        history.goBack();
       };
       interface optionNumberProps{
         id:number;
@@ -360,9 +369,10 @@ export const AddDish = ()=>{
                 canClick={formState.isValid}
                 actionText="Create Dish"
                 />
-
             </form>
         </div>
-    
         )
     }
+
+    //저녁은 하는거 마무리하고 먹으려구요
+    //은진씨는 저녁 드셨나요??
