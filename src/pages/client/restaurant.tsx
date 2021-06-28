@@ -244,6 +244,7 @@ export const Restaurant =()=>{
                      orderStarted={orderStarted}
                      key={index}
                      name={dish.name}
+                     photo={dish.photo!}
                      description={dish.description}
                      price={dish.price}
                      isCustomer={true}

@@ -89,21 +89,32 @@ export const AddDish = ()=>{
         let optionsObjects= optionsNumber.map((theId):DishOptionInputType=>
           {
               if(theId.parentId===undefined){
-                return{
-                    name: rest[`${theId.id}-optionName`],
-                    extra:+rest[`${theId.id}-optionExtra`],
-                    choices:new Array<IChoice>(),
+                if(isNaN(+rest[`${theId.id}-optionExtra`])){
+                    return{
+                        name: rest[`${theId.id}-optionName`],
+                        choices:new Array<IChoice>(),
+                    }
+                }else{
+                    return{
+                        name: rest[`${theId.id}-optionName`],
+                        extra:+rest[`${theId.id}-optionExtra`],
+                        choices:new Array<IChoice>(),
+                    }
                 }
+              }else{
+                  return{
+                      name:'',
+                  }
               }
-        }).filter(Boolean);
-        console.log(optionsObjects);
+        }).filter(Boolean).filter(item=>item.name!=='');
+       
         optionsNumber.map((theId)=>{
             const index= optionsObjects.findIndex((option)=>option?.name===rest[`${theId.parentId}-optionName`]);
       
             if(index>=0){
                 console.log(index);
                 console.log(rest[`${theId.id}-optionName`])
-                optionsObjects[index]?.choices.push({
+                optionsObjects[index]?.choices?.push({
                     name:rest[`${theId.id}-optionName`],
                     extra:+rest[`${theId.id}-optionExtra`]
                 })

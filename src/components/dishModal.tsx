@@ -182,14 +182,14 @@ export const DishModal:React.FC<DishModalProps>=({onclose,addDish})=>{
       {/* <div className="modal-header w-2/5">
         
       </div> */}
-      <div className="modal-content w-2/5">
+      <div className="modal-content w-full max-w-xl">
         <span onClick={onclose} className="float-right cursor-pointer">X</span>
           <div  className="bg-gray-700 py-28 bg-center bg-cover"
            style={{backgroundImage:`url(${addDish.photo})`}}/>
           <form onSubmit={handleSubmit(onSubmit)} >
             <div className=" mb-20">
                 <div className=" text-4xl">{addDish.name}</div>
-                <div className=" text-xl">{addDish.description}</div>
+                <div className=" text-sm">{addDish.description}</div>
             </div>
             <div>
                 {addDish.options?.map((option,index)=>{
@@ -257,7 +257,7 @@ export const DishModal:React.FC<DishModalProps>=({onclose,addDish})=>{
                 })
                 }
             </div>
-            <div className=" grid grid-cols-3">
+            <div className=" grid grid-cols-3 bottom-0">
                 <div className="col-span-1 flex">
                     <span className=" bg-gray-500 w-10 h-10 rounded-full text-center align-middle text-3xl mx-3
                     text-white" 

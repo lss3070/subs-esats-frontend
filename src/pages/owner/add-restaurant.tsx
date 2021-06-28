@@ -181,7 +181,7 @@ export const AddRestaurant =()=>{
     const renderInput=(params: IAutoCompleteProps)=>{
 
     }
-
+console.log(formState.errors.detailAddress)
     return (
         <div className="container flex flex-col items-center mt-52">
             <Helmet>
@@ -279,13 +279,13 @@ export const AddRestaurant =()=>{
                     <input type="file" accept="image/" {...register("file",{
                         required:{
                             value:true,
-                            message:"!!"
+                            message:"image is required!"
                         }
                     })}/>
                 </div>
                <Button
                loading={loading} 
-               canClick={formState.isValid}
+               canClick={true}
                actionText="Create Restaurant"
                />
             </form>
