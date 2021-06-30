@@ -164,7 +164,7 @@ export const DishModal:React.FC<DishModalProps>=({onclose,addDish})=>{
             dishId:addDish.id,
             name:addDish.name,
             count:count,
-            price:addDish.count,
+            price:price,
             options:options
         }
         dispatch({
@@ -172,7 +172,10 @@ export const DishModal:React.FC<DishModalProps>=({onclose,addDish})=>{
             restaurantId:addDish.restaurantId,
             cart:cart
         })
+        onclose();
         }
+
+
 
     addDish.options?.sort((pre,cur)=>{
         return pre.choices?1:-1

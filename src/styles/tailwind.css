@@ -70,6 +70,7 @@
     fixed
     z-999
     h-full
+    grid-rows-5
     grid
     w-2/6
 
@@ -79,6 +80,7 @@
     bg-white
     w-1/4
     h-auto
+    overflow-y-scroll
 }
 .modal-header{
     @apply

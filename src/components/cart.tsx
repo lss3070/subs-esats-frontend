@@ -1,12 +1,14 @@
 
 import { gql, useMutation } from "@apollo/client";
-import React, { useEffect, useState } from "react";
+import React, { ChangeEvent, ChangeEventHandler, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useCartsState } from '../context/CartsContext';
+import { useCartsDispatch, useCartsState } from '../context/CartsContext';
 import { createOrder, createOrderVariables } from "../__generated__/createOrder";
 import { Button } from "./button";
 import { useHistory } from 'react-router-dom';
 import { CreateOrderItemInput } from "../__generated__/globalTypes";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faShoppingCart } from "@fortawesome/free-solid-svg-icons";
 
 
 const CREATE_ORDER_MUTATION=gql`
@@ -29,6 +31,7 @@ interface ICartProps{
 
 export const Cart:React.FC<ICartProps>=({onclose,postion}) => {
     const carts = useCartsState();
+    const dispatch = useCartsDispatch();
     const history = useHistory();
 
     const [orderItems,setOrderItems]= useState<CreateOrderItemInput[]>([])
@@ -60,7 +63,21 @@ export const Cart:React.FC<ICartProps>=({onclose,postion}) => {
 
 
 
-    
+    const countChange=(e:ChangeEvent<HTMLSelectElement>,fakeId: string)=>{
+      console.log(fakeId);
+      console.log(e.currentTarget.value);
+      const newItem = carts.cart?.map((item)=>{
+        if(item.dish.fakeId===fakeId){
+          item.dish.count=+e.currentTarget.value;
+          return item;
+        }else return item;
+      })
+    dispatch({
+      type:'UPDATE',
+      cart:newItem!
+    });
+    }
+
     const onSubmit=()=>{
   
       createOrderMutation({
@@ -91,44 +108,57 @@ export const Cart:React.FC<ICartProps>=({onclose,postion}) => {
     }
   }, [carts])
 
-
-    
     return(
-        <div className="modal-cart" style={postionStyle}>
-        <div className="modal-header">
+        <div className="fixed z-999 h-auto w-2/6 bg-white shadow-2xl border-1
+        " style={postionStyle}>
+        <div className= "h-5">
           <span onClick={onclose} className="float-right cursor-pointer">X</span>
         </div>
-        <div className="modal-content">
-        
+        {carts.cart?.length!==0?
+        ( <div className="">
+        <h1 className="text-2xl mb-5">Your order</h1>
         <form onSubmit={handleSubmit(onSubmit)}>
         {carts.cart?.map((cart)=>{
               return(
-                <div className="border-gray-700 border-2 mb-1">
-                  <span>{cart.dish.name}</span>
+                <div className=" mb-1 grid-flow-col grid">
+                  <div>
+                    <select onChange={(e)=>countChange(e,cart.dish.fakeId)} value={cart.dish.count}>
+                      {Array.from(Array(50),(e,i)=>{
+                       return <option value={i}>{i}</option>
+                      })}
+                    </select>
+                  </div>
+                  <div>
+                  <span className=" text-lg">{cart.dish.name}</span>
                   {
                   cart.dish.options.map((option)=>{
                     if(option.choice===undefined){
                       return(
                         <div>
-                          <span>{option.name}</span>
-                          <span>{option.extra}</span>
+                          <span className=" text-xs">{option.name}</span>
+                          <span className=" text-xs">{option.extra}</span>
                         </div>
                       )
                     }else{
                       return(
                         <div>
                           <div>
-                            <span>{option.name}</span>
+                            <span className=" text-xs font-extralight">{option.name}
+                            (${option.choice.extra})
+                            </span>
                           </div>
                           <div>
-                            <span>{option.choice.name}</span>
-                            <span>{option.choice.extra}</span>
+                            <span className=" text-xs text-gray-400 font-extralight">{option.choice.name}</span>
                           </div>
                         </div>
                       )
                     }
                   })
                   }
+                  </div>
+                  <div>
+                    $ {cart.dish.price* cart.dish.count}
+                  </div>
                 </div>
               )    
                 })
@@ -136,6 +166,18 @@ export const Cart:React.FC<ICartProps>=({onclose,postion}) => {
             <Button canClick={true} loading={false} actionText="Buy"/>
         </form>
         </div>
+      )
+        :
+        (<div className=" grid p-10">
+          <div className="text-center">
+          <FontAwesomeIcon icon={faShoppingCart} className="text-6xl  text-gray-400 "></FontAwesomeIcon>
+          </div>
+          <div className=" text-center text-gray-500">
+            Add items from a restaurant or store to start a new cart
+          </div>
+        </div>)
+      }
+       
       </div>
     )
 }

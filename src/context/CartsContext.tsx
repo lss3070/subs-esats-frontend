@@ -27,7 +27,7 @@ export interface ICartProps{
     options:OptionsProps[]
 }
 
-type Cart ={
+export type Cart ={
     dish:ICartProps
 }
 type CartState={
@@ -35,9 +35,10 @@ type CartState={
     cart: Cart[]|undefined
 } 
 type Action=
+    {type:'UPDATE'; cart:Cart[]}
 | { type: 'CREATE'; restaurantId:number; cart: ICartProps }
 | { type: 'TOGGLE'; id: number }
-| { type: 'REMOVE'; id: number };
+| { type: 'REMOVE'; fakeId: string };
 
 const CartsStateContext = createContext<CartState|undefined>(undefined)
 
@@ -55,8 +56,13 @@ function cartsReducer(state:CartState,action:Action):CartState{
         state.cart?.push({
             dish:action.cart
         })
+        break;
+        case 'REMOVE':
+            state.cart?.filter(item=>item.dish.fakeId!==action.fakeId)
+            break;
+        case 'UPDATE':
+            state.cart=action.cart;
     }
-    console.log(state);
     //임시...
     return state;
 }

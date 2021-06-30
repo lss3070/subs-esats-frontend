@@ -8,9 +8,10 @@ import { CartContextProvider } from '../context/CartsContext';
 
 
 export const App=()=> {
+
   const isLoggedIn = useReactiveVar(isLoggedInVar);
   return isLoggedIn? (
-    <CartContextProvider>
+    <CartContextProvider >
       <LoggedInRouter/>
     </CartContextProvider>
   
