@@ -27,15 +27,15 @@ export interface ICartProps{
     options:OptionsProps[]
 }
 
-export type Cart ={
+export type CartType ={
     dish:ICartProps
 }
-type CartState={
+export type CartState={
     restaurantId:number;
-    cart: Cart[]|undefined
+    cart: CartType[]|undefined
 } 
 type Action=
-    {type:'UPDATE'; cart:Cart[]}
+    {type:'UPDATE'; cart:CartType[]}
 | { type: 'CREATE'; restaurantId:number; cart: ICartProps }
 | { type: 'TOGGLE'; id: number }
 | { type: 'REMOVE'; fakeId: string };
@@ -56,20 +56,20 @@ function cartsReducer(state:CartState,action:Action):CartState{
         state.cart?.push({
             dish:action.cart
         })
-        break;
+        return state;
         case 'REMOVE':
             state.cart?.filter(item=>item.dish.fakeId!==action.fakeId)
-            break;
+            return state;
         case 'UPDATE':
             state.cart=action.cart;
+            return state;
+        default:
+            throw new Error('error!');
     }
-    //임시...
-    return state;
 }
 
 export function CartContextProvider({children}:{children:React.ReactNode}){
 
- 
     const [carts,dispatch] = useReducer(cartsReducer,{
         restaurantId:0,
         cart:[]
@@ -87,11 +87,13 @@ export function CartContextProvider({children}:{children:React.ReactNode}){
 export function useCartsState(){
     const state = useContext(CartsStateContext);
     if(!state) throw new Error('CartProvider not found');
+    console.log(state);
     return state;
 }
 
 export function useCartsDispatch(){
     const dispatch = useContext(CartsDispatchContext);
     if(!dispatch) throw new Error('CartsProvider not found');
+    console.log("dispatch")
     return dispatch;
 }

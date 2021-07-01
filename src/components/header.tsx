@@ -1,6 +1,6 @@
 import { faUser,faSignOutAlt,faShoppingCart } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useState, MouseEvent } from "react";
+import React, { useState, MouseEvent, useEffect } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { LOCALSTORAGE_TOKEN } from "../constants";
 import { useMe } from "../hooks/useMe";
@@ -8,6 +8,7 @@ import mainlogo from "../images/logo.svg"
 import { Modal } from "../pages/modal";
 import { Cart } from "./cart";
 import { UserRole } from '../__generated__/globalTypes';
+import { useCartsState } from "../context/CartsContext";
 
 interface IHeaderProps {
     email:string;
@@ -18,9 +19,15 @@ interface position{
 }
 
 export const Header:React.FC=() => {
+
+    const state = useCartsState();
     const {data}= useMe();
     const [cartOpen,setCartOpen] =useState(false);
     const [position,setPosition]= useState<position>()
+    const [scrollPosition, setScrollPosition] = useState(0);
+
+
+
     const history = useHistory();
 
     const Logout=()=>{
@@ -35,6 +42,21 @@ export const Header:React.FC=() => {
     const closeCart=()=>{
         setCartOpen(false)
     }
+    const handleScroll = () => {
+        const position = window.pageYOffset;
+        setScrollPosition(position);
+    };
+
+    useEffect(()=>{
+        
+        window.addEventListener('scroll',handleScroll, { passive: true });
+        if(cartOpen && scrollPosition>0){
+            setCartOpen(false);
+        }
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+        };
+    },[scrollPosition])
     return(
         <>
         {!data?.me.verified &&  
@@ -61,7 +83,7 @@ export const Header:React.FC=() => {
                     </span>
                 </div>
                 {data?.me.role===UserRole.Client&&cartOpen&&(
-                        <Modal><Cart onclose={closeCart} postion={position!}/></Modal>
+                        <Modal><Cart onclose={closeCart} postion={position!} state={state}/></Modal>
                     )}
             </header>
     </>

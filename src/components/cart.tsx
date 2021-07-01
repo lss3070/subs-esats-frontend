@@ -1,8 +1,8 @@
 
 import { gql, useMutation } from "@apollo/client";
-import React, { ChangeEvent, ChangeEventHandler, useEffect, useState } from "react";
+import React, { ChangeEvent, ChangeEventHandler, useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useCartsDispatch, useCartsState } from '../context/CartsContext';
+import { CartState, useCartsDispatch, useCartsState, CartType } from '../context/CartsContext';
 import { createOrder, createOrderVariables } from "../__generated__/createOrder";
 import { Button } from "./button";
 import { useHistory } from 'react-router-dom';
@@ -22,6 +22,7 @@ const CREATE_ORDER_MUTATION=gql`
 `
 
 interface ICartProps{
+    state:CartState;
     onclose:()=>void;
     postion:{
         x:number
@@ -29,8 +30,10 @@ interface ICartProps{
     }
   }
 
-export const Cart:React.FC<ICartProps>=({onclose,postion}) => {
-    const carts = useCartsState();
+export const Cart:React.FC<ICartProps>=({onclose,postion,state}) => {
+  
+    // const state = useCartsState();
+    const [value,setValue] = useState<CartType[]>(state.cart!);
     const dispatch = useCartsDispatch();
     const history = useHistory();
 
@@ -55,6 +58,7 @@ export const Cart:React.FC<ICartProps>=({onclose,postion}) => {
           history.push(`/orders/${orderId}`)
           alert('order created')
       }
+      
   }
     const[createOrderMutation,{loading:placeOrder}]=useMutation<createOrder,createOrderVariables>
     (CREATE_ORDER_MUTATION,{
@@ -64,17 +68,17 @@ export const Cart:React.FC<ICartProps>=({onclose,postion}) => {
 
 
     const countChange=(e:ChangeEvent<HTMLSelectElement>,fakeId: string)=>{
-      console.log(fakeId);
-      console.log(e.currentTarget.value);
-      const newItem = carts.cart?.map((item)=>{
+      
+      const newItem = state.cart?.map((item)=>{
         if(item.dish.fakeId===fakeId){
           item.dish.count=+e.currentTarget.value;
           return item;
         }else return item;
       })
+      setValue(newItem!);
     dispatch({
       type:'UPDATE',
-      cart:newItem!
+      cart:value!
     });
     }
 
@@ -83,15 +87,15 @@ export const Cart:React.FC<ICartProps>=({onclose,postion}) => {
       createOrderMutation({
         variables:{
             input:{
-                restaurantId:+carts.restaurantId,
+                restaurantId:+state.restaurantId,
                 items:orderItems,
             }
         }
     })
   }
   useEffect(() => {
-    if (carts) {
-      carts.cart?.map((cart)=>{
+    if (state.cart) {
+      state.cart?.map((cart)=>{
         const orderItem:CreateOrderItemInput={
           dishId:cart.dish.dishId,
           count:cart.dish.count,
@@ -106,7 +110,7 @@ export const Cart:React.FC<ICartProps>=({onclose,postion}) => {
         setOrderItems(current=>[...current,orderItem]);
       })
     }
-  }, [carts])
+  }, [state.cart])
 
     return(
         <div className="fixed z-999 h-auto w-2/6 bg-white shadow-2xl border-1
@@ -114,17 +118,19 @@ export const Cart:React.FC<ICartProps>=({onclose,postion}) => {
         <div className= "h-5">
           <span onClick={onclose} className="float-right cursor-pointer">X</span>
         </div>
-        {carts.cart?.length!==0?
-        ( <div className="">
+        {state.cart?.length!==0?
+        ( <div className=" p-5">
         <h1 className="text-2xl mb-5">Your order</h1>
         <form onSubmit={handleSubmit(onSubmit)}>
-        {carts.cart?.map((cart)=>{
+          <div className=" h overflow-y-scroll">
+          {state.cart?.map((cart)=>{
               return(
                 <div className=" mb-1 grid-flow-col grid">
                   <div>
-                    <select onChange={(e)=>countChange(e,cart.dish.fakeId)} value={cart.dish.count}>
+                    <select className=" bg-gray-300 rounded-lg focus:outline-none"
+                    onChange={(e)=>countChange(e,cart.dish.fakeId)} value={cart.dish.count}>
                       {Array.from(Array(50),(e,i)=>{
-                       return <option value={i}>{i}</option>
+                       return <option className="" value={i}>{i}</option>
                       })}
                     </select>
                   </div>
@@ -163,6 +169,8 @@ export const Cart:React.FC<ICartProps>=({onclose,postion}) => {
               )    
                 })
             }
+          </div>
+
             <Button canClick={true} loading={false} actionText="Buy"/>
         </form>
         </div>
