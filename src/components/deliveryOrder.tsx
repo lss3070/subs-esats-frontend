@@ -9,6 +9,7 @@ import { EDIT_ORDER } from '../pages/order';
 import { editOrder, editOrderVariables } from "../__generated__/editOrder";
 import { OrderStatus } from "../__generated__/globalTypes";
 import { OrderNaviProps } from './orderNavi';
+import styled from 'styled-components'
 
 interface IOrderProgs{
     orderId:number;
@@ -193,32 +194,55 @@ export const DeliveryOrder:React.FC<IOrderProgs>=(
                 }
             })
         }
+        const OrderItem = styled.div`
+        &::before{
+            /* background-color: aqua; */
+            content:"";
+            background-image: url(${restaurantImg}) !important;
+            opacity:0.5;
+            position:absolute;
+           background-size:100%;
+           width:100%;
+           min-height:220px;
+           z-index:-1;
+           }
+       `
+
         return(
-            <div className="flex flex-col">
-                <div
-                style={{border:"1px solid red"}} 
-                className="bg-cover bg-center mb-3 py-10">
-                    <h5>
-                        {status}
-                    </h5>
-                    <h3 className="text-4xl">
-                        {restaurantName}
-                    </h3>
-                    <div className="float-left">
-                        <span className="border-t mt-2 py-2 text-xs opacity-50 border-gray-400 block">
-                        {restaurantAddress}
-                        </span>
-                        <h4 className="mt-2 py-2 block text-xl">
-                            배달 위치
-                        </h4>
-                        <span className="mt-2 py-2 text-xs opacity-50 block">
-                            {customerAddress} {customerDetailAddress}
-                        </span>
-                        <span className="mt-2 py-2 text-xs opacity-50 block">
-                            {orderDate}
-                        </span>
+           
+                <OrderItem className="grid grid-cols-5 mb-10">
+                    <div className="col-span-1 grid grid-flow-row">
+                        <div className="text-3xl text-center">
+                            {new Date(orderDate).getFullYear()}/
+                            {new Date(orderDate).getMonth()}/
+                            {new Date(orderDate).getDate()}
+                        </div>
+                        <div className="text-2xl text-center">
+                            {new Date(orderDate).getHours()}:
+                            {new Date(orderDate).getMinutes()}
+                        </div>
+                        <div className="text-center text-2xl text-gray-600">
+                            {status}
+                        </div>
                     </div>
-                    <div className="float-right">
+                    <div className="col-span-3 grid grid-flow-row">
+                        <div className="text-4xl">
+                            {restaurantName}
+                        </div>
+                        <div className="">
+                            <div className="border-t mt-2 py-2 text-xs opacity-50 border-gray-400 block">
+                                {restaurantAddress}
+                            </div>
+                            <div className="mt-2 py-2 text-xl">
+                                배달 위치
+                            </div>
+                            <div className="mt-2 py-2 text-xs opacity-50">
+                                {customerAddress} {customerDetailAddress}
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                    <div className="col-span-1 p-4">
                         {naviStatus!==OrderNaviProps.Complete&&(
                             <div>
                                 <div>
@@ -254,7 +278,8 @@ export const DeliveryOrder:React.FC<IOrderProgs>=(
                          </div>
                         )} */}
                     </div>
-                </div>
-            </div>
+  
+                    </div>
+              </OrderItem>
     )
 }

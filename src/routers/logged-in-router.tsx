@@ -85,10 +85,11 @@ const driverRoutes =[
 ]
 
 const ownerRoutes  =[
-    {path:"/",component:<OwnerIndex/>},
+    {path:"/orders",component:<OwnerOrders/>},
+    {path:"/order/:id",component:<Order/>},
     {path:"/orders/:type",component:<OwnerOrders/>},
     {path:"/add-restaurant",component:<AddRestaurant/>},
-    {path:"/restaurants",component:<MyRestaurants/>},
+    {path:"/",component:<MyRestaurants/>},
     {path:"/restaurants/:id",
     component:<MyRestaurant/>},
     {path:"/restaurants/:restaurantId/add-dish", component:<AddDish/>}

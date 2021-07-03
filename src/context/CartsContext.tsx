@@ -1,4 +1,4 @@
-import React, {createContext, Dispatch, useContext, useReducer} from "react"
+import React, {createContext, Dispatch, useContext, useEffect, useReducer} from "react"
 import { DishParts } from '../__generated__/DishParts';
 import { Dish } from '../components/dish';
 import { OptionsProps } from "../components/dishModal";
@@ -40,6 +40,12 @@ type Action=
 | { type: 'TOGGLE'; id: number }
 | { type: 'REMOVE'; fakeId: string };
 
+const initialState = {
+    restaurantId:0,
+    cart:[]
+  };
+const localState = JSON.parse(localStorage.getItem("cartdata")!); 
+
 const CartsStateContext = createContext<CartState|undefined>(undefined)
 
 type CartsDispatch = Dispatch<Action>;
@@ -49,6 +55,10 @@ const CartsDispatchContext = createContext<CartsDispatch|undefined>(
 )
 
 function cartsReducer(state:CartState,action:Action):CartState{
+
+
+
+
 
     switch(action.type){
         case'CREATE':
@@ -70,10 +80,12 @@ function cartsReducer(state:CartState,action:Action):CartState{
 
 export function CartContextProvider({children}:{children:React.ReactNode}){
 
-    const [carts,dispatch] = useReducer(cartsReducer,{
-        restaurantId:0,
-        cart:[]
-    });
+    const [carts,dispatch] = useReducer(cartsReducer,localState || initialState);
+
+    useEffect(()=>{
+        console.log("contextuseEffect!!")
+        
+    },[carts.cart])
 
     return (
         <CartsDispatchContext.Provider value={dispatch}>
@@ -87,13 +99,11 @@ export function CartContextProvider({children}:{children:React.ReactNode}){
 export function useCartsState(){
     const state = useContext(CartsStateContext);
     if(!state) throw new Error('CartProvider not found');
-    console.log(state);
     return state;
 }
 
 export function useCartsDispatch(){
     const dispatch = useContext(CartsDispatchContext);
     if(!dispatch) throw new Error('CartsProvider not found');
-    console.log("dispatch")
     return dispatch;
 }

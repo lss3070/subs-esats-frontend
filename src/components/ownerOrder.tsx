@@ -9,6 +9,7 @@ import { OwnerTimeModal } from "./ownerTimeModal";
 import { receiptOrder, receiptOrderVariables } from '../__generated__/receiptOrder';
 import styled from 'styled-components'
 import { ownerMultipleOrdersQuery_getMultipleOrders_orders_items } from "../__generated__/ownerMultipleOrdersQuery";
+import { Link } from "react-router-dom";
 
 interface IOrderProgs{
     orderId:number;
@@ -39,7 +40,7 @@ mutation receiptOrder($input:ReceiptOrderInput!) {
 export const OwnerOrder:React.FC<IOrderProgs>=(
     {orderId,restaurantName,customerAddress,customerDetailAddress,orderDate,status,image,naviStatus,
     total,items})=>{
-
+        
         const[submitOpen,setSubmitOpen]=useState(false);
 
         const onCompleted=(data:receiptOrder) =>{
@@ -95,7 +96,6 @@ export const OwnerOrder:React.FC<IOrderProgs>=(
                 }
             })
         }
-         
         const OrderItem = styled.div`
          &::before{
              /* background-color: aqua; */
@@ -129,11 +129,16 @@ export const OwnerOrder:React.FC<IOrderProgs>=(
                             <span>[메뉴{items.length}개 ]</span>
                             <span>${total}</span>
                         </div>
-                        {items.map((item)=>{
-                            return(
-                                <span>{item.dish.name}/</span>
-                            )
-                        })}
+                        <div>
+                            {items.map((item,i)=>{
+                                if(i<5){
+                                    return(
+                                        <span>{item.dish.name}/</span>
+                                    )
+                                }
+                            })}
+                            {items.length>=5?"...":""}
+                        </div>
                         <div> {customerAddress} {customerDetailAddress}</div>
                         <div>{restaurantName}</div>
                     </div>
@@ -145,12 +150,16 @@ export const OwnerOrder:React.FC<IOrderProgs>=(
                     )
                     }
                     {status===OrderStatus.Cooking&&(
-                        <div className=" max-w-full">
-                            <div onClick={onEditOrder} className="btn">Cooked</div>
+                        <div className=" col-span-2 pr-6 flex flex-col justify-center">
+                            <div onClick={onEditOrder} className="btn text-center">Cooked</div>
                         </div>
                     )
                     }
-
+                    {naviStatus===OrderNaviProps.Complete&&(
+                    <div className="col-span-2 pr-6 flex flex-col justify-center">
+                             <Link to={`/order/${orderId}`} className="btn text-center">주문상세</Link>
+                     </div>
+                    )}
                     {submitOpen&&  (<Modal><OwnerTimeModal 
                     onclose={closeSubmit} 
                     orderId={orderId} status={status}

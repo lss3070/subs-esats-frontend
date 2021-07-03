@@ -1,6 +1,6 @@
-import { faRegistered,faChevronDown } from "@fortawesome/free-solid-svg-icons";
+import { faRegistered,faChevronDown,faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { MouseEvent, useState } from "react";
+import { MouseEvent, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { AddDish } from '../pages/owner/add-dish';
 import { Button } from './button';
@@ -47,6 +47,10 @@ export const DishModal:React.FC<DishModalProps>=({onclose,addDish})=>{
     const [count,setCount] = useState(1);
     const [price,setPrice]= useState(addDish.price);
     const [options,setOptions]= useState<OptionsProps[]>([]);
+    const [scrollPosition, setScrollPosition] = useState(0);
+    const modalRef= useRef<HTMLDivElement>(null);
+    const headerRef = useRef<HTMLDivElement>(null);
+
     const onCounIncrease=()=>{
         setCount((current)=>current+1);
     }
@@ -126,6 +130,24 @@ export const DishModal:React.FC<DishModalProps>=({onclose,addDish})=>{
         
     }
     
+    const handleScroll = () => {
+        const position = modalRef.current?.scrollTop!;
+        setScrollPosition(position);
+    };
+
+    useEffect(()=>{
+       
+        modalRef.current?.addEventListener('scroll',handleScroll, { passive: true });
+        if(scrollPosition>0){
+            headerRef.current?.classList.remove('hidden');
+        }else{
+            headerRef.current?.classList.add('hidden');
+        }
+        return () => {
+            modalRef.current?.addEventListener('scroll',handleScroll);
+        };
+    },[scrollPosition])
+    
     const {
         register,
         getValues,
@@ -181,18 +203,25 @@ export const DishModal:React.FC<DishModalProps>=({onclose,addDish})=>{
         return pre.choices?1:-1
     })
     return (
-    <div className="modal-wrap">
+    <div className="modal-wrap" style={{background:"rgba(38, 38, 38, 0.8)"}}>
       {/* <div className="modal-header w-2/5">
         
       </div> */}
-      <div className="modal-content w-full max-w-xl">
-        <span onClick={onclose} className="float-right cursor-pointer">X</span>
+      <div ref={modalRef} className="modal-content w-full max-w-xl">
+        <span className=" top-0 fixed p-3 z-999">
+            <FontAwesomeIcon onClick={onclose} icon={faTimes} className="text-2xl cursor-pointer"></FontAwesomeIcon>
+        </span>
+        <div ref={headerRef} className="hidden top-0 fixed float-left bg-white border-b-2 text-center p-4 font-semibold
+          transition-all"
+        style={{width:`${modalRef.current?.clientWidth}px`}}>
+            {addDish.name}
+        </div>
           <div  className="bg-gray-700 py-28 bg-center bg-cover"
            style={{backgroundImage:`url(${addDish.photo})`}}/>
           <form onSubmit={handleSubmit(onSubmit)} >
-            <div className=" mb-20">
-                <div className=" text-4xl">{addDish.name}</div>
-                <div className=" text-sm">{addDish.description}</div>
+            <div className=" mb-10 ml-5">
+                <div className=" text-4xl mt-4">{addDish.name}</div>
+                <div className=" text-sm mt-2 text-gray-500">{addDish.description}</div>
             </div>
             <div>
                 {addDish.options?.map((option,index)=>{
@@ -261,7 +290,7 @@ export const DishModal:React.FC<DishModalProps>=({onclose,addDish})=>{
                 }
             </div>
             <div className=" grid grid-cols-3 bottom-0">
-                <div className="col-span-1 flex">
+                <div className="col-span-1 flex py-4">
                     <span className=" bg-gray-500 w-10 h-10 rounded-full text-center align-middle text-3xl mx-3
                     text-white" 
                     onClick={onCounDecrease}>-</span>
@@ -270,9 +299,18 @@ export const DishModal:React.FC<DishModalProps>=({onclose,addDish})=>{
                      text-white"
                      onClick={onCounIncrease}>+</span>
                 </div>
-                <div className="col-span-2">
-                    <Button actionText="Add Order" loading={false} canClick={isValid}/>
-                    <span>{count*price}</span>
+                <div className="col-span-2 p-4">
+                    <button 
+                        className={`text-lg font-medium focus:outline-none text-white p-4 transition-colors w-full
+                        ${isValid
+                            ? "bg-lime-600 hover:bg-lime-700"
+                            : "bg-gray-300 pointer-events-none"}`}>
+                                <span className="justify-center">Add Order</span>
+                                <span className="float-right">$ {count*price}</span>
+                    </button>
+
+                    {/* <Button actionText="Add Order" loading={false} canClick={isValid}/>
+                    <span className="text-xl bottom-0 fixed">$ {count*price}</span> */}
                 </div>
             </div>
           </form>

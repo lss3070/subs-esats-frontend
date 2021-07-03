@@ -1,4 +1,4 @@
-import { faUser,faSignOutAlt,faShoppingCart } from "@fortawesome/free-solid-svg-icons";
+import { faUser,faSignOutAlt,faShoppingCart,faClipboardList } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useState, MouseEvent, useEffect } from "react";
 import { Link, useHistory } from "react-router-dom";
@@ -25,8 +25,6 @@ export const Header:React.FC=() => {
     const [cartOpen,setCartOpen] =useState(false);
     const [position,setPosition]= useState<position>()
     const [scrollPosition, setScrollPosition] = useState(0);
-
-
 
     const history = useHistory();
 
@@ -69,6 +67,12 @@ export const Header:React.FC=() => {
                         <img src={mainlogo} className="w-36 mb-10" alt="Nuber eats"/>
                     </Link>
                     <span className="text-xs">
+                        {(data?.me.role===UserRole.Client||data?.me.role===UserRole.Owner)&&
+                        (
+                            <Link to="/orders" className="text-xl cursor-pointer mr-2">
+                                  <FontAwesomeIcon icon={faClipboardList} className="text-xl"></FontAwesomeIcon>
+                            </Link>
+                        )}
                         {data?.me.role===UserRole.Client&&(
                         <span onClick={openCart} className="text-xl cursor-pointer mr-2">
                             <FontAwesomeIcon icon={faShoppingCart} className="text-xl"></FontAwesomeIcon>

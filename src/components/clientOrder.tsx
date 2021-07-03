@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { OrderStatus } from "../__generated__/globalTypes";
 import { OrderNaviProps } from './orderNavi';
-
+import styled from 'styled-components'
 import { Link } from "react-router-dom";
 import { clientMultipleOrdersQuery_getMultipleOrders_orders_items } from "../__generated__/clientMultipleOrdersQuery";
 
@@ -16,6 +16,7 @@ interface IOrderProgs{
     naviStatus:OrderNaviProps;
     total:number;
     deliveryTime:number;
+    coverImg:string;
     items:clientMultipleOrdersQuery_getMultipleOrders_orders_items[];
 }
 interface IParams{
@@ -27,21 +28,39 @@ interface IParams{
 
 export const ClientOrder:React.FC<IOrderProgs>=(
     {orderId,restaurantName,restaurantId,customerAddress,customerDetailAddress,orderDate,status,deliveryTime,naviStatus,
-    total,items})=>{
+        coverImg,total,items})=>{
+
+            const OrderItem = styled.div`
+            &::before{
+                /* background-color: aqua; */
+                content:"";
+                background-image: url(${coverImg}) !important;
+                opacity:0.5;
+                position:absolute;
+               background-size:100%;
+               width:100%;
+   
+               min-height:160px;
+               z-index:-1;
+               }
+           `
+
         return(
-            <div >
-                <div
-                style={{border:"1px solid red"}} 
-                className="bg-cover bg-center mb-3 py-10 flex flex-row w-full">
-                    <div>
-                        <h2 className="text-4xl">
+            <div>
+                <OrderItem
+                className="bg-cover bg-center mb-3 py-5 grid grid-cols-5 w-full">
+                    <div className="col-span-1 grid grid-flow-row mt-4">
+                        <div className="text-4xl text-center">
                             {new Date(orderDate).getFullYear()}/ 
                             {new Date(orderDate).getMonth()}/
                             {new Date(orderDate).getDate()}
-                        </h2>
-                        <h2 className="text-center text-xl">{status}</h2>
+                        </div>
+                        <div className="text-2xl text-center">
+                            {new Date(orderDate).getHours()}:{new Date(orderDate).getMinutes()}
+                        </div>
+                        <div className="text-center text-xl">{status}</div>
                     </div>
-                    <div className="ml-4">
+                    <div className="ml-4 col-span-3 mt-5">
                         <div className=" text-2xl">{restaurantName}</div>
                         <div>
                             <span>[메뉴{items.length}개 ]</span>
@@ -49,21 +68,21 @@ export const ClientOrder:React.FC<IOrderProgs>=(
                         </div>
                         {items.map((item)=>{
                             return(
-                                <span>{item.id}/</span>
+                                <span>{item.dish.name}/</span>
                             )
                         })}
                         <div> {customerAddress} {customerDetailAddress}</div>
                         {status!==OrderStatus.Deliverd&&(
                             <div>
-                                예상시간 :{deliveryTime}
+                                예상시간 : {deliveryTime}분
                             </div>
                         )}
                     </div>
-                    <div className="grid">
-                        <Link to={`/restaurants/${restaurantId}`} className="mini-btn">가게보기</Link>
-                        <Link to={`/orders/${orderId}`} className="mini-btn">주문상세</Link>
+                    <div className="grid col-span-1 p-2">
+                        <Link to={`/restaurants/${restaurantId}`} className="mini-btn text-center">가게보기</Link>
+                        <Link to={`/orders/${orderId}`} className="mini-btn text-center">주문상세</Link>
                     </div>
-                </div>
+                </OrderItem>
             </div>
     )
 }

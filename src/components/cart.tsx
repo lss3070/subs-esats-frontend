@@ -33,7 +33,7 @@ interface ICartProps{
 export const Cart:React.FC<ICartProps>=({onclose,postion,state}) => {
   
     // const state = useCartsState();
-    const [value,setValue] = useState<CartType[]>(state.cart!);
+    const [value,setValue] = useState<CartType[]|undefined>(state.cart!);
     const dispatch = useCartsDispatch();
     const history = useHistory();
 
@@ -55,6 +55,8 @@ export const Cart:React.FC<ICartProps>=({onclose,postion,state}) => {
     const onCompleted=(data:createOrder) =>{
       const{createOrder:{ok, orderId}}= data
       if(data.createOrder.ok){
+          onclose();
+          state.cart=[];
           history.push(`/orders/${orderId}`)
           alert('order created')
       }
@@ -68,18 +70,39 @@ export const Cart:React.FC<ICartProps>=({onclose,postion,state}) => {
 
 
     const countChange=(e:ChangeEvent<HTMLSelectElement>,fakeId: string)=>{
+      if(e.currentTarget.value==="0"){
+       removeItem(fakeId);
+      }else{
+        changeItem(e,fakeId)
+      }
+      // const newItem = state.cart?.map((item)=>{
+      //   if(item.dish.fakeId===fakeId){
+      //     item.dish.count=+e.currentTarget.value;
+      //     return item;
+      //   }else return item;
+      // })
+      console.log("changeEvent");
+      console.log(value);
+    dispatch({
+      type:'UPDATE',
+      cart:value!
+    });
+    }
+    const removeItem=(fakeId:string)=>{
       
-      const newItem = state.cart?.map((item)=>{
+      const returnValue = state.cart?.filter(item=>item.dish.fakeId!==fakeId);
+   
+      setValue(returnValue);
+    }
+
+    const changeItem =(e:ChangeEvent<HTMLSelectElement>,fakeId:string)=>{
+      const returnValue =state.cart?.map((item)=>{
         if(item.dish.fakeId===fakeId){
           item.dish.count=+e.currentTarget.value;
           return item;
         }else return item;
       })
-      setValue(newItem!);
-    dispatch({
-      type:'UPDATE',
-      cart:value!
-    });
+      setValue(returnValue!);
     }
 
     const onSubmit=()=>{
@@ -94,6 +117,9 @@ export const Cart:React.FC<ICartProps>=({onclose,postion,state}) => {
     })
   }
   useEffect(() => {
+    console.log("useeffect!!");
+    console.log(value);
+    console.log(state.cart)
     if (state.cart) {
       state.cart?.map((cart)=>{
         const orderItem:CreateOrderItemInput={
@@ -110,7 +136,8 @@ export const Cart:React.FC<ICartProps>=({onclose,postion,state}) => {
         setOrderItems(current=>[...current,orderItem]);
       })
     }
-  }, [state.cart])
+    localStorage.setItem("cartdata", JSON.stringify(state));
+  }, [value])
 
     return(
         <div className="fixed z-999 h-auto w-2/6 bg-white shadow-2xl border-1
@@ -130,7 +157,7 @@ export const Cart:React.FC<ICartProps>=({onclose,postion,state}) => {
                     <select className=" bg-gray-300 rounded-lg focus:outline-none"
                     onChange={(e)=>countChange(e,cart.dish.fakeId)} value={cart.dish.count}>
                       {Array.from(Array(50),(e,i)=>{
-                       return <option className="" value={i}>{i}</option>
+                       return <option className="" value={i}>{i==0?"remove":i}</option>
                       })}
                     </select>
                   </div>

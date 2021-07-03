@@ -21,6 +21,9 @@ getMultipleOrders(input: $input) {
   orders {
     id
     items{       
+        dish{
+                name
+            }
             id
             count
             options{
@@ -84,6 +87,9 @@ export const ClientOrders=()=>{
         <div>
         </div>
         <div className="max-w-screen-2xl pb-20 mx-auto mt-8">
+            <h4 className="text-4xl ml-4 font-bold text-gray-600 mb-5">
+                Orders List
+            </h4>
             {data?.getMultipleOrders.ok&&data.getMultipleOrders.orders?.map((order)=>{
                     return(
                         <ClientOrder 
@@ -92,6 +98,7 @@ export const ClientOrders=()=>{
                         restaurantId={order.restaurant?.id!}
                         total={order.total!}
                         items={order.items}
+                        coverImg = {order.restaurant?.coverImg!}
                         customerAddress={order.customer?.address!}
                         customerDetailAddress={order.customer?.detailAddress!}
                         orderDate={order.createdAt}

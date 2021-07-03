@@ -97,7 +97,7 @@ export const OwnerOrders=()=>{
                 setStatus([OrderStatus.Deliverd]);
                 break;
         }
-    },[]);
+    },[type]);
     return(
 
         <div>

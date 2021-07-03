@@ -18,13 +18,25 @@ export const OrderNavi =()=>{
         <div className=" min-w-full flex items-center flex-col">
             <div>
                 <Link to={`/orders/${OrderNaviProps.Pending}`} 
-                className="border-gray-500 border-t-2 border-b-2 border-l-2 text-3xl p-5 cursor-pointer">
+                className="text-3xl p-5 cursor-pointer
+                 bg-lime-600 text-white
+                 hover:bg-lime-700
+                 mr-10
+                ">
                     Pending</Link>
                 <Link to={`/orders/${OrderNaviProps.Progress}`}
-                className="border-gray-500 border-2 text-3xl p-5 cursor-pointer">
+                className=" text-3xl p-5 cursor-pointer
+                bg-lime-600 text-white
+                hover:bg-lime-700
+                mr-10
+                ">
                     Progress</Link>
                 <Link to={`/orders/${OrderNaviProps.Complete}`}
-                className=" border-gray-500 border-t-2 border-b-2 text-3xl border-r-2 p-5 cursor-pointer">
+                className="  text-3xl p-5 cursor-pointer
+                bg-lime-600 text-white
+                hover:bg-lime-700
+                mr-10
+                ">
                     Complete</Link>
             </div>
         </div>

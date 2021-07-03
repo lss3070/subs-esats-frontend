@@ -152,7 +152,7 @@ export const DriverOrders=()=>{
                 setStatus([OrderStatus.Deliverd]);
                 break;
         }
-    },[]);
+    },[type]);
     return(
 
         <div>
