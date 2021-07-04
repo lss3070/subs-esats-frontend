@@ -25,5 +25,6 @@ export interface RestaurantParts {
   category: RestaurantParts_category | null;
   address: string;
   isPromoted: boolean;
+  description: string | null;
   divisions: RestaurantParts_divisions[] | null;
 }

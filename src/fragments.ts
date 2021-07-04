@@ -45,6 +45,7 @@ export const RESTAURANT_FRAGMENT = gql`
       }
       address
       isPromoted
+      description
       divisions{
         name
       }

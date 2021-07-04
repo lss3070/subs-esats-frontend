@@ -1,6 +1,6 @@
 
 import { gql, useQuery } from "@apollo/client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
 
 import { USER_FRAGMENT } from "../../fragments";
@@ -8,7 +8,7 @@ import  {RouteComponentProps, useParams}  from 'react-router-dom';
 import {  OrderNavi, OrderNaviProps } from "../../components/orderNavi";
 import { useMe } from "../../hooks/useMe";
 import { ClientOrder } from "../../components/clientOrder";
-import { clientMultipleOrdersQuery, clientMultipleOrdersQueryVariables } from '../../__generated__/clientMultipleOrdersQuery';
+import { clientMultipleOrdersQuery, clientMultipleOrdersQueryVariables, clientMultipleOrdersQuery_getMultipleOrders_orders } from '../../__generated__/clientMultipleOrdersQuery';
 
 
 const CLIENT_MULTIPLE_ORDERS_QUERY = gql`
@@ -66,10 +66,18 @@ interface IParams{
     type:OrderNaviProps;
 }
 
+type renderedTranscation={
+    index:number;
+    orders:clientMultipleOrdersQuery_getMultipleOrders_orders[];
+}[]
+
 export const ClientOrders=()=>{
     const {type} =useParams<IParams>();
     const {data:userData}=useMe();
-    console.log(type);
+    const length = useRef(1);
+    const [renderTransaction, setRenderedTransaction] = useState<clientMultipleOrdersQuery_getMultipleOrders_orders[]>()
+    const target=useRef<HTMLDivElement>(null);
+    
 
     const{data,loading,error}=useQuery<
     clientMultipleOrdersQuery,clientMultipleOrdersQueryVariables
@@ -79,6 +87,54 @@ export const ClientOrders=()=>{
             }
         }
     });
+
+    const maxLength = data?.getMultipleOrders.orders?.length
+
+
+
+    const changeExtraTransaction = () => {
+        console.log("changeExtraTransaction")
+        const newrenderedTransaction = renderTransaction!.concat(
+          data?.getMultipleOrders.orders!?.slice(5 * length.current, 5 * length.current + 5),
+        );
+        length.current += 1;
+        setRenderedTransaction(newrenderedTransaction);
+      };
+    
+      const onIntersect: IntersectionObserverCallback = (entries, observer) => {
+          console.log("onIntersect")
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && length.current < maxLength!) {
+            observer.unobserve(entry.target);
+            changeExtraTransaction();
+          }
+        });
+      };
+
+    useEffect(()=>{
+        console.log("1useeffect")
+        if(data?.getMultipleOrders.ok){
+            length.current=1;
+            if(data?.getMultipleOrders.orders!?.length<5){
+                setRenderedTransaction(data?.getMultipleOrders.orders!);
+            }else{
+                setRenderedTransaction(data.getMultipleOrders.orders?.slice(0,4))
+            }
+        }
+    },[data?.getMultipleOrders])
+
+    useEffect(()=>{
+        console.log("2ueseffect");
+        let observer:IntersectionObserver;
+        if(target.current){
+            observer = new IntersectionObserver(onIntersect,{threshold: 0.5})
+            observer.observe(target.current);
+        }
+        return()=> observer && observer.disconnect();
+    },[data?.getMultipleOrders,renderTransaction])
+
+
+
     return(
         <div>
         <Helmet>
@@ -90,7 +146,8 @@ export const ClientOrders=()=>{
             <h4 className="text-4xl ml-4 font-bold text-gray-600 mb-5">
                 Orders List
             </h4>
-            {data?.getMultipleOrders.ok&&data.getMultipleOrders.orders?.map((order)=>{
+
+            {renderTransaction?.map((order)=>{
                     return(
                         <ClientOrder 
                         orderId={order.id}
@@ -105,6 +162,7 @@ export const ClientOrders=()=>{
                         status={order.status}
                         deliveryTime={10}
                         naviStatus={type}
+                        refTarget={target}
                         />
                     )
                     })

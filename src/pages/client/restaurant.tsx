@@ -214,8 +214,24 @@ export const Restaurant =()=>{
                 </h6>
             </div>
             </div>
-            <div className="container pb-32 flex flex-col items-end mt-20">
-                {!orderStarted && (
+            <div className="px-10 mt-5">
+                <div className="text-sm font-light mb-3">{data?.restaurant.restaurant?.description}</div>
+                <div className="text-sm font-light">{data?.restaurant.restaurant?.address}</div>
+            </div>
+            <div className="w-full px-10 mt-12 cursor-pointer">
+                <div className="flex border-b border-gray-300 pb-8">
+                    {data?.restaurant.restaurant?.divisions?.map((division)=>{
+                            return(
+                                <div className="mr-10 text-lg">
+                                    {division.name}
+                                </div>
+                            )
+                        }
+                        )}
+                </div>
+                </div>
+            <div className="container pb-32 flex flex-col items-end mt-5">
+                {/* {!orderStarted && (
                 <button onClick={triggerStartOrder} className="btn px-10">
                     Start Order
                 </button>
@@ -230,12 +246,61 @@ export const Restaurant =()=>{
                      Cancel Order
                  </button>
                  </div>
-                )}
-                
-                <div className="w-full grid mt-16 md:grid-cols-3 gap-x-5 gap-y-10">
+                )} */}
+                <div>
+                    {data?.restaurant.restaurant?.divisions?.map((division)=>{
+                        const item = data.restaurant.restaurant?.menu.filter((item)=>item.divisions?.find((findItem)=>findItem.name===division.name))
+                        
+                            return(
+                                <div className="">
+                                    <div>
+                                        {division.name}
+                                    </div>
+                                    {item?.map((dish,index)=>{
+                                        return(
+                                            <Dish
+                                            isSelected={isSelected(dish.id)}
+                                            id={dish.id}
+                                            orderStarted={orderStarted}
+                                            key={index}
+                                            name={dish.name}
+                                            photo={dish.photo!}
+                                            description={dish.description}
+                                            price={dish.price}
+                                            isCustomer={true}
+                                            options={dish.options}
+                                            //  addItemToOrder={addItemToOrder}
+                                            removeFromOrder={removeFromOrder}
+                                            //  addOptionToItem={addOptionToItem}
+                                            dishModalOpen={dishModalOpen}
+                                            dishValue={dish}
+                                            >
+                                                {dish.options?.map((option, index) => (
+                                                    <DishOption
+                                                    key={index}
+                                                    isSelected={isOptionSelected(dish.id,option.name)}
+                                                    name={option.name}
+                                                    extra={option.extra}
+                                                    dishId={dish.id}
+                                                    // addOptionToItem={addOptionToItem}
+                                                    // removeOptionFromItem={removeOptionFromItem}
+                                                    />
+                                            ))}
+                                        </Dish>
+                                        )
+                                    })}
+                                </div>
+                                
+                            )
+                        }
+                        )}
+                </div>
+            
+   
+                {/* <div className="w-full grid mt-16 md:grid-cols-3 gap-x-5 gap-y-10">
                
                {data?.restaurant.restaurant?.menu.map((dish,index) => {
-                   
+                   console.log(data?.restaurant.restaurant?.divisions);
                    return (
                        
                     <Dish
@@ -270,7 +335,7 @@ export const Restaurant =()=>{
                      )
                     }
                      )}
-               </div>
+               </div> */}
                {openDishModal&&<DishModal onclose={dishModalClose} 
                      addDish={dishModalValue!}></DishModal>}
             </div>

@@ -57,6 +57,7 @@ export interface restaurant_restaurant_restaurant {
   category: restaurant_restaurant_restaurant_category | null;
   address: string;
   isPromoted: boolean;
+  description: string | null;
   divisions: restaurant_restaurant_restaurant_divisions[] | null;
   menu: restaurant_restaurant_restaurant_menu[];
 }

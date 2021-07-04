@@ -18,6 +18,7 @@ interface IOrderProgs{
     deliveryTime:number;
     coverImg:string;
     items:clientMultipleOrdersQuery_getMultipleOrders_orders_items[];
+    refTarget:React.RefObject<HTMLDivElement>;
 }
 interface IParams{
     id:string;
@@ -28,7 +29,7 @@ interface IParams{
 
 export const ClientOrder:React.FC<IOrderProgs>=(
     {orderId,restaurantName,restaurantId,customerAddress,customerDetailAddress,orderDate,status,deliveryTime,naviStatus,
-        coverImg,total,items})=>{
+        coverImg,total,items,refTarget})=>{
 
             const OrderItem = styled.div`
             &::before{
@@ -46,7 +47,7 @@ export const ClientOrder:React.FC<IOrderProgs>=(
            `
 
         return(
-            <div>
+            <div ref={refTarget}>
                 <OrderItem
                 className="bg-cover bg-center mb-3 py-5 grid grid-cols-5 w-full">
                     <div className="col-span-1 grid grid-flow-row mt-4">

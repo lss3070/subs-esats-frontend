@@ -27,6 +27,7 @@ export interface category_category_restaurants {
   category: category_category_restaurants_category | null;
   address: string;
   isPromoted: boolean;
+  description: string | null;
   divisions: category_category_restaurants_divisions[] | null;
 }
 

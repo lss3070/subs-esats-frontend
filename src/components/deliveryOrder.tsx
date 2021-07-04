@@ -210,7 +210,7 @@ export const DeliveryOrder:React.FC<IOrderProgs>=(
 
         return(
            
-                <OrderItem className="grid grid-cols-5 mb-10">
+                <OrderItem className="grid grid-cols-5 mb-10 h-56">
                     <div className="col-span-1 grid grid-flow-row">
                         <div className="text-3xl text-center">
                             {new Date(orderDate).getFullYear()}/

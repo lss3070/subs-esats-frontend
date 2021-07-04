@@ -64,6 +64,7 @@ export interface myRestaurant_myRestaurant_restaurant {
   category: myRestaurant_myRestaurant_restaurant_category | null;
   address: string;
   isPromoted: boolean;
+  description: string | null;
   divisions: myRestaurant_myRestaurant_restaurant_divisions[] | null;
   menu: myRestaurant_myRestaurant_restaurant_menu[];
   orders: myRestaurant_myRestaurant_restaurant_orders[];
