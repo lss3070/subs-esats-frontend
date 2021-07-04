@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { OrderStatus } from "../__generated__/globalTypes";
 import { OrderNaviProps } from './orderNavi';
-import { gql, useMutation } from "@apollo/client";
-import { editOrder, editOrderVariables } from "../__generated__/editOrder";
+import { BaseMutationOptions, gql, MutationHookOptions, useMutation } from "@apollo/client";
+import { editOrder, editOrderVariables } from '../__generated__/editOrder';
 import { EDIT_ORDER } from "../pages/order";
 import { Modal } from "../pages/modal";
 import { OwnerTimeModal } from "./ownerTimeModal";
@@ -37,25 +37,39 @@ mutation receiptOrder($input:ReceiptOrderInput!) {
 }
 `
 
+
 export const OwnerOrder:React.FC<IOrderProgs>=(
     {orderId,restaurantName,customerAddress,customerDetailAddress,orderDate,status,image,naviStatus,
     total,items})=>{
         
         const[submitOpen,setSubmitOpen]=useState(false);
 
-        const onCompleted=(data:receiptOrder) =>{
+        const onCompleted=(data:any) =>{
+           
             setSubmitOpen(false);
-            const{receiptOrder:{ok}}= data
+            let ok;
+            if(data.receiptOrder){
+                ok = data.receiptOrder.ok;
+                // const{receiptOrder:{ok}}= data
+            }else{
+                ok = data.editOrder.ok
+                // const {editOrder:{ok}}=data
+            }
+            // const{receiptOrder:{ok}}= data
+            // const {editOrder:{ok}}=data
+            console.log(ok);
             if(!ok){
                 console.log("error....");
             }else{
                 window.location.reload();
             }
+            
         }
+        
   
 
         const [editOrderMutation] = useMutation<
-        editOrder,editOrderVariables>(EDIT_ORDER,{})
+        editOrder,editOrderVariables>(EDIT_ORDER,{onCompleted})
 
         const [receiptOrderMutation] = useMutation<
         receiptOrder,receiptOrderVariables>(RECEIPT_ORDER_MUTATION,{onCompleted})
@@ -96,6 +110,18 @@ export const OwnerOrder:React.FC<IOrderProgs>=(
                 }
             })
         }
+        const onCancelOrder=()=>{
+            editOrderMutation({
+                variables:{
+                    input:{
+                        id:orderId,
+                        status:OrderStatus.Canceled
+                    }
+                }
+            })
+        }
+
+
         const OrderItem = styled.div`
          &::before{
              /* background-color: aqua; */
@@ -145,7 +171,7 @@ export const OwnerOrder:React.FC<IOrderProgs>=(
                     {status===OrderStatus.Pending&&(
                         <div className="col-span-2 pr-6 flex flex-col justify-center">
                             <div onClick={openSubmit} className="btn text-center">접수하기</div>
-                            <div className="cancel-btn text-center">주문 취소</div>
+                            <div onClick={onCancelOrder} className="cancel-btn text-center">주문 취소</div>
                         </div>
                     )
                     }

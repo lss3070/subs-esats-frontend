@@ -8,6 +8,7 @@
 //==============================================================
 
 export enum OrderStatus {
+  Canceled = "Canceled",
   Cooked = "Cooked",
   Cooking = "Cooking",
   Deliverd = "Deliverd",

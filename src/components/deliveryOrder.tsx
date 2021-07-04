@@ -6,7 +6,7 @@ import jsonp from 'jsonp';
 import { gql, useMutation } from "@apollo/client";
 import { takeOrder, takeOrderVariables } from '../__generated__/takeOrder';
 import { EDIT_ORDER } from '../pages/order';
-import { editOrder, editOrderVariables } from "../__generated__/editOrder";
+import { editOrder, editOrderVariables } from '../__generated__/editOrder';
 import { OrderStatus } from "../__generated__/globalTypes";
 import { OrderNaviProps } from './orderNavi';
 import styled from 'styled-components'
@@ -148,14 +148,15 @@ export const DeliveryOrder:React.FC<IOrderProgs>=(
         //         console.log("fail ㅠㅜ");
         //     }
         // }
-        const onCompleted=(data:takeOrder) =>{
-
-            const{takeOrder:{ok}}= data
+        const onCompleted=(data:any) =>{
+            let ok =false;
+            if(data.takeOrder!){
+                ok = data.takeOrder.ok
+            }else if(data.editOrder!){
+                ok=data.editOrder.ok
+            }
             if(ok){
                 window.location.reload();
-                // console.log("success")
-                // // history.push(`/orders/${orderId}`)
-                // // alert('order created')
             }else{
                 console.log("fail ㅠㅜ");
             }

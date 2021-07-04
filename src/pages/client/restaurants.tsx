@@ -65,7 +65,8 @@ export const Restaurants=()=>{
         <title>Home |Sub's Eats</title>
       </Helmet>
         <form onSubmit={handleSubmit(onSearchSubmit)} 
-        className="bg-gray-800 w-full py-40 flex items-center justify-center">
+        style={{backgroundImage:"url(https://ubernewsroomapi.10upcdn.com/wp-content/uploads/2019/01/Screen-Shot-2019-01-29-at-8.17.47-am-1080x540.png)"}}
+        className="bg-gray-800 w-full py-40 flex items-center justify-center bg-no-repeat bg-cover">
             <input 
             {...register("searchTerm",
             {
@@ -103,7 +104,7 @@ export const Restaurants=()=>{
                   </Link>
                 ))}
           </div>
-            <div className="grid mt-16 md:grid-cols-3  gap-x-5 gap-y-10">
+            <div className="mx-20 grid mt-16 md:grid-cols-4 gap-x-5 gap-y-10">
                 {data?.restaurants.results?.map((restaurant)=>(
                   <Restaurant 
                   key={restaurant.id}

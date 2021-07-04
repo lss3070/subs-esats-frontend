@@ -183,11 +183,11 @@ export const AddRestaurant =()=>{
     }
 console.log(formState.errors.detailAddress)
     return (
-        <div className="container flex flex-col items-center mt-52">
+        <div className="container flex flex-col items-center mt-20">
             <Helmet>
                 <title>AddRestaurant | Sub's Eats</title>
             </Helmet>
-            <h1>AddRestaurant</h1>
+            <h1 className="text-2xl font-semibold">AddRestaurant</h1>
             <form className="grid max-w-screen-sm gap-3 mt-5 w-full mb-5" onSubmit={handleSubmit(onSubmit)}>
                 <input {...register("name",{
                     required:{

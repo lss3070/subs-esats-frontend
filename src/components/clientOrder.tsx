@@ -61,7 +61,7 @@ export const ClientOrder:React.FC<IOrderProgs>=(
                         </div>
                         <div className="text-center text-xl">{status}</div>
                     </div>
-                    <div className="ml-4 col-span-3 mt-5">
+                    <div className="ml-4 col-span-3 mt-4">
                         <div className=" text-2xl">{restaurantName}</div>
                         <div>
                             <span>[메뉴{items.length}개 ]</span>
@@ -79,7 +79,7 @@ export const ClientOrder:React.FC<IOrderProgs>=(
                             </div>
                         )}
                     </div>
-                    <div className="grid col-span-1 p-2">
+                    <div className="grid col-span-1 p-4">
                         <Link to={`/restaurants/${restaurantId}`} className="mini-btn text-center">가게보기</Link>
                         <Link to={`/orders/${orderId}`} className="mini-btn text-center">주문상세</Link>
                     </div>

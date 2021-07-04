@@ -1,9 +1,10 @@
 
 
 
-import React from "react";
+import React,{lazy,Suspense} from "react";
 import { restaurant_restaurant_restaurant_menu_options } from "../__generated__/restaurant";
 import { DishParts } from '../__generated__/DishParts';
+import LazyItem from "./LazyItem";
 
 
 
@@ -75,7 +76,8 @@ export const Dish: React.FC<IDishProps> = ({
                 <span> $ {price}</span> 
             </div>
             <div className=" col-span-2">
-                    <img className="w-40 h-40" src={photo}/>
+                    <LazyItem key={id} src={photo} name={name}/>
+                    {/* <img className="w-40 h-40" src={photo}/> */}
             </div>
 
             {/* {

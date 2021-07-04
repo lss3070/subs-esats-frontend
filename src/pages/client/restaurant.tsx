@@ -199,10 +199,10 @@ export const Restaurant =()=>{
     }
     return(
         <div>
-            <div className="bg-gray-800 py-48 bg-center bg-cover" 
+            <div className="bg-gray-800 py-24 bg-center bg-cover" 
             style={{backgroundImage:`url(${data?.restaurant.restaurant?.coverImg})`}}>
 
-            <div className="bg-white w-3/12 py-4 pl-48">
+            {/* <div className="bg-white w-3/12 py-4 pl-48">
                 <h4 className="text-4xl mb-3">
                     {data?.restaurant.restaurant?.name}
                 </h4>
@@ -212,7 +212,8 @@ export const Restaurant =()=>{
                 <h6 className="text-sm font-light">
                     {data?.restaurant.restaurant?.address}
                 </h6>
-            </div>
+            </div> */}
+                <div className="text-white text-6xl ml-10">{data?.restaurant.restaurant?.name}</div>
             </div>
             <div className="px-10 mt-5">
                 <div className="text-sm font-light mb-3">{data?.restaurant.restaurant?.description}</div>
@@ -230,7 +231,7 @@ export const Restaurant =()=>{
                         )}
                 </div>
                 </div>
-            <div className="container pb-32 flex flex-col items-end mt-5">
+            <div className="max-w-screen-2xl pb-32 flex flex-col items-end mt-5">
                 {/* {!orderStarted && (
                 <button onClick={triggerStartOrder} className="btn px-10">
                     Start Order
@@ -252,11 +253,12 @@ export const Restaurant =()=>{
                         const item = data.restaurant.restaurant?.menu.filter((item)=>item.divisions?.find((findItem)=>findItem.name===division.name))
                         
                             return(
-                                <div className="">
-                                    <div>
-                                        {division.name}
+                                <div className="mx-0 md:mx-10">
+                                    <div className="font-semibold text-xl">
+                                        {item?.length!>0&&division.name}
                                     </div>
-                                    {item?.map((dish,index)=>{
+                                    <div className="w-full grid mt-10 md:grid-cols-3 gap-x-5 gap-y-10">
+                                    {item?.length!>0&&item?.map((dish,index)=>{
                                         return(
                                             <Dish
                                             isSelected={isSelected(dish.id)}
@@ -289,6 +291,7 @@ export const Restaurant =()=>{
                                         </Dish>
                                         )
                                     })}
+                                    </div>
                                 </div>
                                 
                             )

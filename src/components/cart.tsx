@@ -8,7 +8,7 @@ import { Button } from "./button";
 import { useHistory } from 'react-router-dom';
 import { CreateOrderItemInput } from "../__generated__/globalTypes";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faShoppingCart } from "@fortawesome/free-solid-svg-icons";
+import { faShoppingCart,faTimes } from "@fortawesome/free-solid-svg-icons";
 
 
 const CREATE_ORDER_MUTATION=gql`
@@ -70,10 +70,11 @@ export const Cart:React.FC<ICartProps>=({onclose,postion,state}) => {
 
 
     const countChange=(e:ChangeEvent<HTMLSelectElement>,fakeId: string)=>{
+      let changeValue:CartType[];
       if(e.currentTarget.value==="0"){
-       removeItem(fakeId);
+       changeValue=removeItem(fakeId)!;
       }else{
-        changeItem(e,fakeId)
+        changeValue=changeItem(e,fakeId)!;
       }
       // const newItem = state.cart?.map((item)=>{
       //   if(item.dish.fakeId===fakeId){
@@ -81,18 +82,18 @@ export const Cart:React.FC<ICartProps>=({onclose,postion,state}) => {
       //     return item;
       //   }else return item;
       // })
-      console.log("changeEvent");
-      console.log(value);
+
     dispatch({
       type:'UPDATE',
-      cart:value!
+      cart:changeValue!
     });
     }
     const removeItem=(fakeId:string)=>{
       
       const returnValue = state.cart?.filter(item=>item.dish.fakeId!==fakeId);
-   
-      setValue(returnValue);
+        setValue(returnValue);
+      
+      return returnValue;
     }
 
     const changeItem =(e:ChangeEvent<HTMLSelectElement>,fakeId:string)=>{
@@ -102,7 +103,9 @@ export const Cart:React.FC<ICartProps>=({onclose,postion,state}) => {
           return item;
         }else return item;
       })
+
       setValue(returnValue!);
+      return returnValue;
     }
 
     const onSubmit=()=>{
@@ -117,9 +120,6 @@ export const Cart:React.FC<ICartProps>=({onclose,postion,state}) => {
     })
   }
   useEffect(() => {
-    console.log("useeffect!!");
-    console.log(value);
-    console.log(state.cart)
     if (state.cart) {
       state.cart?.map((cart)=>{
         const orderItem:CreateOrderItemInput={
@@ -142,8 +142,8 @@ export const Cart:React.FC<ICartProps>=({onclose,postion,state}) => {
     return(
         <div className="fixed z-999 h-auto w-2/6 bg-white shadow-2xl border-1
         " style={postionStyle}>
-        <div className= "h-5">
-          <span onClick={onclose} className="float-right cursor-pointer">X</span>
+        <div className= "h-5 p-2">
+          <FontAwesomeIcon onClick={onclose} icon={faTimes} className="cursor-pointer"/>
         </div>
         {state.cart?.length!==0?
         ( <div className=" p-5">

@@ -23,11 +23,11 @@ export const MyRestaurants =()=>{
     const {data}= useQuery<myRestaurants>(MY_RESTAURANTS_QUERY);
     console.log(data);
     return (
-        <div>
+        <div className="px-10">
             <Helmet>
                 <title>My Restaurants | Sub's Eats</title>
             </Helmet>
-            <div className="max-w-screen-2xl mx-auto mt-32">
+            <div className="max-w-screen-2xl mx-auto mt-20">
                 <h2 className="text-4xl font-medium mb-10">My Restaurants</h2>
                 {data?.myRestaurants.ok && data.myRestaurants.restaurants?.length ===0?
                 (
@@ -44,7 +44,7 @@ export const MyRestaurants =()=>{
                     className="text-lime-600 hover:underline" to="/add-restaurant">
                         Create one &rarr;
                     </Link>
-                    <div className="grid mt-16 md:grid-cols-3  gap-x-5 gap-y-10">
+                    <div className="grid mt-16 md:grid-cols-4  gap-x-5 gap-y-10">
                         {data?.myRestaurants.restaurants?.map((restaurant)=>(
                         <Restaurant 
                         key={restaurant.id}
