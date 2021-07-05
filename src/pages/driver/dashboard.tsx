@@ -9,7 +9,7 @@ import { Link, useHistory } from 'react-router-dom';
 import { takeOrder, takeOrderVariables } from '../../__generated__/takeOrder';
 
 
-const COOKED_ORDERS_SUBSCRIPTION =gql`
+export const COOKED_ORDERS_SUBSCRIPTION =gql`
     subscription cookedOrders{
         cookedOrders{
             ...FullOrderParts
@@ -58,21 +58,21 @@ export const DashBoard =()=>{
     },[]);
     useEffect(()=>{
         console.log("effect");
-        if(map && maps){
-            map.panTo(new google.maps.LatLng(driverCoords.lat,driverCoords.lng));
+        // if(map && maps){
+        //     map.panTo(new google.maps.LatLng(driverCoords.lat,driverCoords.lng));
 
-            // google 연동 결제 됨 
-            const geocoder = new google.maps.Geocoder();
-            geocoder.geocode(
-                {
-                    location: new google.maps.LatLng(driverCoords.lat,driverCoords.lng),
-                },
-                (results,status)=>{
-                    console.log(status,results);
+        //     // google 연동 결제 됨 
+        //     const geocoder = new google.maps.Geocoder();
+        //     geocoder.geocode(
+        //         {
+        //             location: new google.maps.LatLng(driverCoords.lat,driverCoords.lng),
+        //         },
+        //         (results,status)=>{
+        //             console.log(status,results);
 
-                }
-            );
-        }
+        //         }
+        //     );
+        // }
     },[driverCoords.lat,driverCoords.lng])
     const onApiLoaded =({map,maps}:{map:any,maps:any})=>{
         map.panTo(new google.maps.LatLng(driverCoords.lat,driverCoords.lng));
@@ -107,7 +107,6 @@ export const DashBoard =()=>{
                     directionsRenderer.setDirections(result);
                 });
         }
-       
     };
     const {data:cookedOrdersData} = useSubscription<cookedOrders>(COOKED_ORDERS_SUBSCRIPTION)
 
@@ -159,6 +158,7 @@ export const DashBoard =()=>{
             🚖
             </div>
         </GoogleMapReact>
+
         </div>
         {
         cookedOrdersData?.cookedOrders.restaurant ?

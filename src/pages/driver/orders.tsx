@@ -118,6 +118,7 @@ export const DriverOrders=()=>{
     const {data:userData}=useMe();
     console.log(type);
     const [status,setStatus]= useState<OrderStatus[]>();
+
     // const [status,setStatus]= useState(OrderStatus.Pending)
     // const{data,loading,error}=useQuery<
     // ordersQuery,ordersQueryVariables
@@ -128,6 +129,7 @@ export const DriverOrders=()=>{
     //         }
     //     }
     // });
+
 
     const{data,loading,error}=useQuery<
     multipleOrdersQuery,multipleOrdersQueryVariables
@@ -141,7 +143,6 @@ export const DriverOrders=()=>{
     useEffect(()=>{
         switch(type){
             case OrderNaviProps.Pending:
-                console.log("!!");
                 setStatus([OrderStatus.Cooked,
                     OrderStatus.Cooking,OrderStatus.Pending]);
                 break;
@@ -154,7 +155,6 @@ export const DriverOrders=()=>{
         }
     },[type]);
     return(
-
         <div>
         <Helmet>
           <title>Orders |Sub's Eats</title>

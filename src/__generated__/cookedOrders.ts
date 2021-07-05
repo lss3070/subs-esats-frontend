@@ -17,11 +17,26 @@ export interface cookedOrders_cookedOrders_driver {
 export interface cookedOrders_cookedOrders_customer {
   __typename: "User";
   email: string;
+  address: string | null;
+  detailAddress: string | null;
 }
 
 export interface cookedOrders_cookedOrders_restaurant {
   __typename: "Restaurant";
   name: string | null;
+  address: string;
+}
+
+export interface cookedOrders_cookedOrders_items_dish {
+  __typename: "Dish";
+  name: string;
+}
+
+export interface cookedOrders_cookedOrders_items {
+  __typename: "OrderItem";
+  id: number;
+  count: number | null;
+  dish: cookedOrders_cookedOrders_items_dish;
 }
 
 export interface cookedOrders_cookedOrders {
@@ -32,6 +47,7 @@ export interface cookedOrders_cookedOrders {
   driver: cookedOrders_cookedOrders_driver | null;
   customer: cookedOrders_cookedOrders_customer | null;
   restaurant: cookedOrders_cookedOrders_restaurant | null;
+  items: cookedOrders_cookedOrders_items[];
 }
 
 export interface cookedOrders {

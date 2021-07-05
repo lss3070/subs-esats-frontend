@@ -17,11 +17,26 @@ export interface FullOrderParts_driver {
 export interface FullOrderParts_customer {
   __typename: "User";
   email: string;
+  address: string | null;
+  detailAddress: string | null;
 }
 
 export interface FullOrderParts_restaurant {
   __typename: "Restaurant";
   name: string | null;
+  address: string;
+}
+
+export interface FullOrderParts_items_dish {
+  __typename: "Dish";
+  name: string;
+}
+
+export interface FullOrderParts_items {
+  __typename: "OrderItem";
+  id: number;
+  count: number | null;
+  dish: FullOrderParts_items_dish;
 }
 
 export interface FullOrderParts {
@@ -32,4 +47,5 @@ export interface FullOrderParts {
   driver: FullOrderParts_driver | null;
   customer: FullOrderParts_customer | null;
   restaurant: FullOrderParts_restaurant | null;
+  items: FullOrderParts_items[];
 }

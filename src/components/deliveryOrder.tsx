@@ -10,6 +10,7 @@ import { editOrder, editOrderVariables } from '../__generated__/editOrder';
 import { OrderStatus } from "../__generated__/globalTypes";
 import { OrderNaviProps } from './orderNavi';
 import styled from 'styled-components'
+import { DeliveryModal } from "./deliveryModal";
 
 interface IOrderProgs{
     orderId:number;
@@ -54,6 +55,7 @@ export const DeliveryOrder:React.FC<IOrderProgs>=(
         const [duration,setDuration]=useState<string>();//거리
         //나와의 거리
 
+        const [openDeliveryModal,deliveryOpenModal]= useState(false);
 
         const service= new google.maps.DistanceMatrixService();
         const geocoder = new google.maps.Geocoder();
@@ -172,16 +174,18 @@ export const DeliveryOrder:React.FC<IOrderProgs>=(
           })
 
 
-
+         
         const onDeliverySelect=()=>{
-            const updateStatus = status===OrderStatus.Cooked?OrderStatus.PickedUp:OrderStatus.Deliverd
-            takeOrderMutation({
-                variables:{
-                    input:{
-                        id:orderId,
-                    }
-                }
-            })
+
+            deliveryOpenModal(true)
+            // const updateStatus = status===OrderStatus.Cooked?OrderStatus.PickedUp:OrderStatus.Deliverd
+            // takeOrderMutation({
+            //     variables:{
+            //         input:{
+            //             id:orderId,
+            //         }
+            //     }
+            // })
         }
         const onStatusChange=()=>{
             const item =status===OrderStatus.PickedUp?OrderStatus.Deliverd:(
@@ -194,6 +198,9 @@ export const DeliveryOrder:React.FC<IOrderProgs>=(
                     }
                 }
             })
+        }
+        const onModalClose=()=>{
+            deliveryOpenModal(false);
         }
         const OrderItem = styled.div`
         &::before{
@@ -208,7 +215,6 @@ export const DeliveryOrder:React.FC<IOrderProgs>=(
            z-index:-1;
            }
        `
-
         return(
            
                 <OrderItem className="grid grid-cols-5 mb-10 h-56">
@@ -279,8 +285,15 @@ export const DeliveryOrder:React.FC<IOrderProgs>=(
                          </div>
                         )} */}
                     </div>
-  
                     </div>
+                    {openDeliveryModal&&<DeliveryModal 
+                    orderId={orderId}
+                    onclose={onModalClose}
+                    restaurantAddress={customerLatLng!}
+                    customerAddress={restaurantLatLng!}
+                    duration={duration!}
+                    distance={distance!}
+                    ></DeliveryModal>}
               </OrderItem>
     )
 }

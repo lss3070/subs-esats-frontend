@@ -14,7 +14,7 @@ import { OrderStatus, UserRole } from '../__generated__/globalTypes';
 
 
 
-const GET_ORDER = gql`
+export const GET_ORDER = gql`
 query getOrder($input:GetOrderInput!){
     getOrder(input:$input){
         ok

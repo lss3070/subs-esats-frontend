@@ -17,11 +17,26 @@ export interface getOrder_getOrder_order_driver {
 export interface getOrder_getOrder_order_customer {
   __typename: "User";
   email: string;
+  address: string | null;
+  detailAddress: string | null;
 }
 
 export interface getOrder_getOrder_order_restaurant {
   __typename: "Restaurant";
   name: string | null;
+  address: string;
+}
+
+export interface getOrder_getOrder_order_items_dish {
+  __typename: "Dish";
+  name: string;
+}
+
+export interface getOrder_getOrder_order_items {
+  __typename: "OrderItem";
+  id: number;
+  count: number | null;
+  dish: getOrder_getOrder_order_items_dish;
 }
 
 export interface getOrder_getOrder_order {
@@ -32,6 +47,7 @@ export interface getOrder_getOrder_order {
   driver: getOrder_getOrder_order_driver | null;
   customer: getOrder_getOrder_order_customer | null;
   restaurant: getOrder_getOrder_order_restaurant | null;
+  items: getOrder_getOrder_order_items[];
 }
 
 export interface getOrder_getOrder {
