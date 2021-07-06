@@ -25,6 +25,7 @@ email:string;
 password:string;
 role:UserRole;
 zipCode:number;
+name:string;
 address:string;
 detailAddress:string;
 
@@ -79,11 +80,11 @@ const [createAccountMutation,
 
     const onSubmit=()=>{
         if(!loading){
-            const {email,password,role,detailAddress}=getValues();
+            const {email,password,name,role,detailAddress}=getValues();
             
             createAccountMutation({
                 variables:{
-                    createAccountInput:{email,password,role,
+                    createAccountInput:{email,password,role,name,
                         zipCode:+zipCode!,
                         address:address,detailAddress}
                 }
@@ -120,6 +121,17 @@ return (
         placeholder="Email" 
         className="input"
          />
+         <input {...register("name",{
+            required:{
+                value:true,
+                message:"name Required",
+            },
+        })}
+        required
+        type="name" 
+        placeholder="Name" 
+        className="input"
+        />
 
          {errors.email && errors.email.type==="pattern" &&
         (<FormError errorMessage={errors.email.message}/>
@@ -146,7 +158,6 @@ return (
         {/* {errors.password?.type==="minLength" && (
             <FormError errorMessage="Password must be more than 10 chars."/>
         )} */}
-
             <div className="w-full">
                <input {...register("zipCode")}
                     className="input w-3/4"
@@ -160,7 +171,7 @@ return (
                     placeholder="Address"
                     defaultValue={address}
                     />
-                    <span onClick={openAddress} className="btn cursor-pointer w-1/4">Search</span>
+                    <span onClick={openAddress} className="btn cursor-pointer w-full">Search</span>
 
                     {addressOpen&&(
                         <Modal><AddressSearch onclose={closeAddress} addAddress={addAddress}/></Modal>

@@ -1,6 +1,6 @@
 
 import { gql, useQuery } from "@apollo/client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
 
 import { USER_FRAGMENT } from "../../fragments";
@@ -10,7 +10,7 @@ import GoogleMapReact from 'google-map-react';
 import  {RouteComponentProps, useParams}  from 'react-router-dom';
 import {  OrderNavi, OrderNaviProps } from "../../components/orderNavi";
 import { DeliveryOrder } from "../../components/deliveryOrder";
-import { multipleOrdersQuery, multipleOrdersQueryVariables } from "../../__generated__/multipleOrdersQuery";
+import { multipleOrdersQuery, multipleOrdersQueryVariables, multipleOrdersQuery_getMultipleOrders_orders } from "../../__generated__/multipleOrdersQuery";
 import { useMe } from "../../hooks/useMe";
 
 const ORDERS_QUERY = gql`
@@ -111,13 +111,21 @@ ${USER_FRAGMENT}
 interface IParams{
     type:OrderNaviProps;
 }
+type renderedTranscation={
+    index:number;
+    orders:multipleOrdersQuery_getMultipleOrders_orders[];
+}[]
 
 export const DriverOrders=()=>{
     
     const {type} =useParams<IParams>();
     const {data:userData}=useMe();
-    console.log(type);
     const [status,setStatus]= useState<OrderStatus[]>();
+    const length = useRef(1);
+    const [renderTransaction, setRenderedTransaction] = useState<multipleOrdersQuery_getMultipleOrders_orders[]>()
+    const [fakeItem,setFakeItem]=useState<multipleOrdersQuery_getMultipleOrders_orders[]>();
+    const target=useRef<HTMLDivElement>(null);
+    
 
     // const [status,setStatus]= useState(OrderStatus.Pending)
     // const{data,loading,error}=useQuery<
@@ -130,7 +138,9 @@ export const DriverOrders=()=>{
     //     }
     // });
 
+        const onCompleted=(data: multipleOrdersQuery)=>{
 
+        }
     const{data,loading,error}=useQuery<
     multipleOrdersQuery,multipleOrdersQueryVariables
     >(MULTIPLE_ORDERS_QUERY,{
@@ -140,6 +150,62 @@ export const DriverOrders=()=>{
             }
         }
     });
+
+    const maxLength = fakeItem?.length
+
+    const changeExtraTransaction = () => {
+        console.log("changeExtraTransaction")
+        const newrenderedTransaction = renderTransaction!.concat(
+            fakeItem!?.slice(5 * length.current, 5 * length.current + 5),
+        );
+        length.current += 1;
+        setRenderedTransaction(newrenderedTransaction);
+      };
+    
+      const onIntersect: IntersectionObserverCallback = (entries, observer) => {
+          console.log("onIntersect")
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && length.current < maxLength!) {
+            observer.unobserve(entry.target);
+            changeExtraTransaction();
+          }
+        });
+      };
+
+    useEffect(()=>{
+        if(data?.getMultipleOrders.ok){
+            
+            if(type===OrderNaviProps.Pending){
+               setFakeItem(data.getMultipleOrders.orders!.filter((item)=>item.driver===null));
+            }else if(type===OrderNaviProps.Progress||type===OrderNaviProps.Complete){
+                setFakeItem(data.getMultipleOrders.orders!.filter((item)=>item.driver?.id===userData?.me.id));
+            }
+           
+        }
+    },[data?.getMultipleOrders])
+    useEffect(()=>{
+        if(fakeItem!==undefined){
+            length.current=1;
+            if(fakeItem!.length<5){
+                setRenderedTransaction(fakeItem!);
+            }else{
+                setRenderedTransaction(fakeItem?.slice(0,4))
+            }
+        }
+       
+    },[fakeItem])
+
+    useEffect(()=>{
+        console.log("!useeffect2")
+        let observer:IntersectionObserver;
+        if(target.current){
+            observer = new IntersectionObserver(onIntersect,{threshold: 0.5})
+            observer.observe(target.current);
+        }
+        return()=> observer && observer.disconnect();
+    },[fakeItem,renderTransaction])
+
+
     useEffect(()=>{
         switch(type){
             case OrderNaviProps.Pending:
@@ -173,10 +239,8 @@ export const DriverOrders=()=>{
         </GoogleMapReact>
         </div>
         <div className="max-w-screen-2xl pb-20 mx-auto mt-8">
-            {data?.getMultipleOrders.ok&&data.getMultipleOrders.orders?.map((order)=>{
-                console.log(order);
-                console.log(userData?.me.id);
-                if(type===OrderNaviProps.Pending&&order.driver===null){
+            {renderTransaction?.map((order)=>{
+                
                     return(
                         <DeliveryOrder 
                         orderId={order.id}
@@ -188,25 +252,10 @@ export const DriverOrders=()=>{
                         orderDate={order.createdAt}
                         status={order.status}
                         naviStatus={type}
+                        refTarget={target}
                         />
                     )
-                }else if((type===OrderNaviProps.Progress||type===OrderNaviProps.Complete)&&
-                     order.driver?.id===userData?.me.id){
-                return(
-                    <DeliveryOrder 
-                    orderId={order.id}
-                    restaurantName={order.restaurant?.name!}
-                    restaurantImg={order.restaurant?.coverImg!}
-                    restaurantAddress={order.restaurant?.address!}
-                    customerAddress={order.customer?.address!}
-                    customerDetailAddress={order.customer?.detailAddress!}
-                    orderDate={order.createdAt}
-                    status={order.status}
-                    naviStatus={type}
-                    />
-                )
                 }
-            }   
             )
             }
 

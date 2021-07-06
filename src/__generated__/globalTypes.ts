@@ -30,6 +30,7 @@ export interface CategoryInput {
 
 export interface CreateAccountInput {
   email: string;
+  name: string;
   password: string;
   role: UserRole;
   zipCode?: number | null;

@@ -90,8 +90,6 @@ export const ClientOrders=()=>{
 
     const maxLength = data?.getMultipleOrders.orders?.length
 
-
-
     const changeExtraTransaction = () => {
         console.log("changeExtraTransaction")
         const newrenderedTransaction = renderTransaction!.concat(
@@ -112,7 +110,6 @@ export const ClientOrders=()=>{
       };
 
     useEffect(()=>{
-        console.log("1useeffect")
         if(data?.getMultipleOrders.ok){
             length.current=1;
             if(data?.getMultipleOrders.orders!?.length<5){
@@ -124,7 +121,6 @@ export const ClientOrders=()=>{
     },[data?.getMultipleOrders])
 
     useEffect(()=>{
-        console.log("2ueseffect");
         let observer:IntersectionObserver;
         if(target.current){
             observer = new IntersectionObserver(onIntersect,{threshold: 0.5})

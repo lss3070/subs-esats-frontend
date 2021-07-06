@@ -22,6 +22,7 @@ interface IOrderProgs{
     orderDate:string;
     status:OrderStatus;
     naviStatus:OrderNaviProps;
+    refTarget:React.RefObject<HTMLDivElement>;
 }
 
 interface PlaceInfo{
@@ -47,7 +48,7 @@ interface IParams{
 
 
 export const DeliveryOrder:React.FC<IOrderProgs>=(
-    {orderId,restaurantName,restaurantImg,restaurantAddress,customerAddress,customerDetailAddress,orderDate,status,naviStatus})=>{
+    {orderId,restaurantName,restaurantImg,restaurantAddress,customerAddress,customerDetailAddress,orderDate,status,naviStatus,refTarget})=>{
         const [map,setMap] = useState<google.maps.Map>();
         const [customerLatLng,setCustomerLatLng] = useState<PlaceInfo>();
         const [restaurantLatLng,setRestaurantLatLng]= useState<PlaceInfo>();
@@ -175,17 +176,22 @@ export const DeliveryOrder:React.FC<IOrderProgs>=(
 
 
          
-        const onDeliverySelect=()=>{
+        const onDeliveryModalOpen=()=>{
 
             deliveryOpenModal(true)
-            // const updateStatus = status===OrderStatus.Cooked?OrderStatus.PickedUp:OrderStatus.Deliverd
-            // takeOrderMutation({
-            //     variables:{
-            //         input:{
-            //             id:orderId,
-            //         }
-            //     }
-            // })
+            
+        }
+        const onDeliverySelect=()=>{
+            const updateStatus = status===OrderStatus.Cooked?OrderStatus.PickedUp:OrderStatus.Deliverd
+                        takeOrderMutation({
+                            variables:{
+                                input:{
+                                    id:orderId,
+                                }
+                            }
+                        })
+            deliveryOpenModal(false);
+                    
         }
         const onStatusChange=()=>{
             const item =status===OrderStatus.PickedUp?OrderStatus.Deliverd:(
@@ -217,7 +223,7 @@ export const DeliveryOrder:React.FC<IOrderProgs>=(
        `
         return(
            
-                <OrderItem className="grid grid-cols-5 mb-10 h-56">
+                <OrderItem className="grid grid-cols-5 mb-10 h-56" ref={refTarget}>
                     <div className="col-span-1 grid grid-flow-row">
                         <div className="text-3xl text-center">
                             {new Date(orderDate).getFullYear()}/
@@ -262,7 +268,7 @@ export const DeliveryOrder:React.FC<IOrderProgs>=(
                         ) 
                         }
                         {naviStatus===OrderNaviProps.Pending&&(
-                            <div onClick={onDeliverySelect} className="btn text-center cursor-pointer">
+                            <div onClick={onDeliveryModalOpen} className="btn text-center cursor-pointer">
                                 Delivery Select
                             </div>
                         )}
@@ -293,6 +299,7 @@ export const DeliveryOrder:React.FC<IOrderProgs>=(
                     customerAddress={restaurantLatLng!}
                     duration={duration!}
                     distance={distance!}
+                    deliverySelect={onDeliverySelect}
                     ></DeliveryModal>}
               </OrderItem>
     )

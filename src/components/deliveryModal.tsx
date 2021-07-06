@@ -3,13 +3,37 @@ import { useEffect, useState } from 'react';
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { gql, useQuery, useSubscription } from '@apollo/client';
-import { cookedOrders } from '../__generated__/cookedOrders';
-import { COOKED_ORDERS_SUBSCRIPTION } from '../pages/driver/dashboard';
-import { FULL_ORDER_FRAGMENT } from '../fragments';
-import { getOrder, getOrderVariables } from '../__generated__/getOrder';
 import { GET_ORDER } from '../pages/order';
+import { getDeliveryOrder, getDeliveryOrderVariables } from '../__generated__/getDeliveryOrder';
 
 
+const GET_DELIVERY_ORDER=gql`
+query getDeliveryOrder($input:GetOrderInput!){
+    getOrder(input:$input){
+        ok
+        error
+        order{
+            id
+            items{
+                dish{
+                name
+                }
+            }
+            customer{
+                email
+                address
+                detailAddress
+                name
+            }
+            restaurant{
+                name
+                address
+                detailAddress
+            }
+        }
+    }
+}
+`
 
 interface DeliveryModalProps{
     orderId:number;
@@ -18,6 +42,7 @@ interface DeliveryModalProps{
     duration:string;
     distance:string;
     onclose:()=>void;
+    deliverySelect:()=>void;
 }
 interface PlaceInfo{
     lat:number;
@@ -29,7 +54,7 @@ interface ICoords{
     lng:number;
 }
 
-export const DeliveryModal:React.FC<DeliveryModalProps>=({onclose,customerAddress,restaurantAddress,distance,duration,orderId})=>{
+export const DeliveryModal:React.FC<DeliveryModalProps>=({onclose,customerAddress,restaurantAddress,distance,duration,orderId,deliverySelect})=>{
 
     //@ts-ignore
     const onSuccess=({coords:{latitude,longitude}}:Position)=>{
@@ -44,8 +69,8 @@ export const DeliveryModal:React.FC<DeliveryModalProps>=({onclose,customerAddres
     const [maps,setMaps] = useState<any>();
 
     
-    const {data,subscribeToMore}=useQuery<getOrder,getOrderVariables>(
-        GET_ORDER,
+    const {data,subscribeToMore}=useQuery<getDeliveryOrder,getDeliveryOrderVariables>(
+        GET_DELIVERY_ORDER,
         {
         variables:{
             input:{
@@ -61,9 +86,7 @@ export const DeliveryModal:React.FC<DeliveryModalProps>=({onclose,customerAddres
     },[]);
 
     const makeRoute=()=>{
-       console.log("makeRoute");
         if(map){
-           
             const directionsService = new google.maps.DirectionsService();
             const directionsRenderer = new google.maps.DirectionsRenderer({polylineOptions:{
                 strokeColor:"#000",
@@ -92,12 +115,10 @@ export const DeliveryModal:React.FC<DeliveryModalProps>=({onclose,customerAddres
     };
 
     useEffect(()=>{
-        console.log("~~~")
         if(driverCoords){
-            console.log("!!!")
             makeRoute();
         }
-    },[driverCoords]);
+    },[map,maps]);
 
     const onApiLoaded =({map,maps}:{map:any,maps:any})=>{
         map.panTo(new google.maps.LatLng(driverCoords!.lat,driverCoords!.lng));
@@ -150,26 +171,29 @@ export const DeliveryModal:React.FC<DeliveryModalProps>=({onclose,customerAddres
                         </GoogleMapReact>
                     )}
                 </div>
-                <div className="grid grid-flow-col">
-                    <div className="grid">
-                        <h2>{data?.getOrder.order?.customer?.email}</h2>
-                        <div>{data?.getOrder.order?.customer?.address!} {data?.getOrder.order?.customer?.detailAddress}</div>
+                <div className="grid grid-cols-2 border-2 border-gray-500">
+                    <div className="grid col-span-1 border-r-2 border-gray-500 text-center px-4">
+                            <div className="text-gray-400 text-xs mt-4">🍱출발</div>
+                            <div className="mb-4">{data?.getOrder.order?.restaurant?.address} {data?.getOrder.order?.restaurant?.detailAddress}</div> 
                     </div>
-                    <div>
-                        <h2>{data?.getOrder.order?.restaurant?.name}</h2>
-                        <div>{data?.getOrder.order?.restaurant?.address}</div>
+                    <div className="col-span-1 text-center px-4">
+                            <div className="text-gray-400 text-xs mt-4">🏠도착</div>
+                            <div className="mb-4">{data?.getOrder.order?.customer?.address!} {data?.getOrder.order?.customer?.detailAddress}</div>
                     </div>
-                    
                 </div> 
-                <div>
-                    <div>
-                   {data?.getOrder.order?.items.map((item)=>
-                       item.dish.name
-                   )}
+                <div className="p-4">
+                    <div className="text-center">
+                        <span className="">메뉴 </span>  
+                        <span className="text-2xl text-lime-700">
+                            {data?.getOrder.order?.items[0].dish.name}{data?.getOrder.order?.items.length!>1&&+"외"+data?.getOrder.order?.items.length!+"개"}
+                        </span>
+                    </div>
+                    <div className="text-center">
+                       총거리 <span className=" text-2xl text-lime-700">{distance}  </span>/   
+                    예상시간 <span className="text-2xl text-lime-700">{duration}</span>
                    </div>
-                   <div>{distance}/{duration}</div>
                 </div>
-                <div className="btn text-center">
+                <div className="btn text-center" onClick={deliverySelect}>
                     Delivery Select
                 </div>
 

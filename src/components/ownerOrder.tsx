@@ -22,6 +22,7 @@ interface IOrderProgs{
     image:string;
     total:number;
     items:ownerMultipleOrdersQuery_getMultipleOrders_orders_items[];
+    refTarget:React.RefObject<HTMLDivElement>;
 }
 interface IParams{
     id:string;
@@ -40,7 +41,7 @@ mutation receiptOrder($input:ReceiptOrderInput!) {
 
 export const OwnerOrder:React.FC<IOrderProgs>=(
     {orderId,restaurantName,customerAddress,customerDetailAddress,orderDate,status,image,naviStatus,
-    total,items})=>{
+    total,items,refTarget})=>{
         
         const[submitOpen,setSubmitOpen]=useState(false);
 
@@ -139,6 +140,7 @@ export const OwnerOrder:React.FC<IOrderProgs>=(
         return(
             <div className="mb-10" style={{height:160}}>
                 <OrderItem
+                ref={refTarget}
                 className="
                 bg-cover 
                 bg-center 
