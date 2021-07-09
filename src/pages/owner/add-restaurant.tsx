@@ -123,7 +123,7 @@ export const AddRestaurant =()=>{
             const divisionsObjects= divisionsNumber.map((theId)=>({
                 name: rest[`${theId}-menuDivision`],
             }))
-            const url = process.env.NODE_ENV==="production"?"https://subs-eats-backend.herokuapp.com/graphql": `http://localhost:4000/graphql`;
+            const url = process.env.NODE_ENV==="production"?"https://subs-eats-backend.herokuapp.com": `http://localhost:4000`;
             const actualFile=file[0];
             const formbody = new FormData();
             formbody.append("file",actualFile);
