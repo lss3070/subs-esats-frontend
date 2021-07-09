@@ -127,9 +127,10 @@ export const AddDish = ()=>{
 
         const actualFile=file[0];
         const formbody = new FormData();
+        const url = process.env.NODE_ENV==="production"?"https://subs-eats-backend.herokuapp.com/graphql": `http://localhost:4000/graphql`;
         formbody.append("file",actualFile);
         const {url:coverImg} = await(
-            await fetch("http://localhost:4000/uploads",{
+            await fetch(url,{
             method:"POST",
             body:formbody
         })
